@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import com.disscheng.weblog.entity.Category;
+import org.apache.ibatis.annotations.Select;
 
 @Mapper
 public interface CategoryMapper {
@@ -15,7 +16,12 @@ public interface CategoryMapper {
      * @return
      */
     public Page<Category> pageQuery(CategoryPageQueryDTO categoryPageQueryDTO) ;
-
+    /**
+     * 查询所有分类
+     * @return
+     */
+    @Select("select * from t_category")
+    public Page<Category> getAll();
     /**
      * 新增分类
      * @param category 分类对象

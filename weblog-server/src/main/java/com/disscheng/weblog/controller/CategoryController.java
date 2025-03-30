@@ -32,6 +32,14 @@ public class CategoryController {
         return Result.success(categoryService.list(categoryPageQueryDTO));
     }
     /**
+     * 查询所有分类
+     * @return
+     */
+    @GetMapping("/listAll")
+    public Result<List<Category>> listAll() {
+        return Result.success(categoryService.listAll());
+    }
+    /**
      * 添加分类
      * @param categoryDTO
      * @return

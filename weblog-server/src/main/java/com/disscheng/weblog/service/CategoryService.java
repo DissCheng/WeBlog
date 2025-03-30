@@ -5,6 +5,8 @@ import com.disscheng.weblog.dto.CategoryPageQueryDTO;
 import com.disscheng.weblog.entity.Category;
 import com.disscheng.weblog.vo.CategoryPageQueryVO;
 
+import java.util.List;
+
 public interface CategoryService {
 
     /**
@@ -15,7 +17,11 @@ public interface CategoryService {
      */
     public CategoryPageQueryVO list(CategoryPageQueryDTO categoryPageQueryDTO);
 
-
+    /**
+     * 获取所有分类
+     * @return 分类列表
+     */
+    public List<Category> listAll();
     /**
      * 新增分类
      *
@@ -29,4 +35,6 @@ public interface CategoryService {
      *
      */
     public void delete(Long id);
+
+
 }

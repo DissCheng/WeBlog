@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class CategoryServiceImpl implements CategoryService {
@@ -33,6 +34,13 @@ public class CategoryServiceImpl implements CategoryService {
         categoryPageQueryVO.setPages(categoryPage.getPages());
         categoryPageQueryVO.setData(categoryPage.getResult());
         return categoryPageQueryVO;
+    }
+    /**
+     * 查询所有分类
+     * @return
+     */
+    public List<Category> listAll() {
+        return categoryMapper.getAll();
     }
     /**
      * 新增分类
