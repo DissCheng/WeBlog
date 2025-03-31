@@ -1,8 +1,11 @@
 package com.disscheng.weblog.service;
 
+import com.disscheng.weblog.dto.ArticlePageQueryByCategoryDTO;
+import com.disscheng.weblog.dto.ArticlePageQueryDTO;
 import com.disscheng.weblog.dto.CategoryDTO;
 import com.disscheng.weblog.dto.CategoryPageQueryDTO;
 import com.disscheng.weblog.entity.Category;
+import com.disscheng.weblog.vo.ArticlePageQueryVO;
 import com.disscheng.weblog.vo.CategoryPageQueryVO;
 
 import java.util.List;
@@ -36,5 +39,10 @@ public interface CategoryService {
      */
     public void delete(Long id);
 
-
+    /**
+     * 根据分类分页查询文章
+     * @param articlePageQueryByCategoryDTO
+     * @return
+     */
+    ArticlePageQueryVO getArticlesByCategory(ArticlePageQueryByCategoryDTO articlePageQueryByCategoryDTO);
 }

@@ -1,18 +1,21 @@
-package com.disscheng.weblog.controller;
+package com.disscheng.weblog.controller.users;
 
 import com.disscheng.weblog.dto.TagDTO;
 import com.disscheng.weblog.dto.TagPageQueryDTO;
+import com.disscheng.weblog.dto.TagSearchDTO;
 import com.disscheng.weblog.entity.Tag;
 import com.disscheng.weblog.result.Result;
 import com.disscheng.weblog.service.TagService;
 import com.disscheng.weblog.vo.TagPageQueryVO;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
+import java.util.List;
 
 @RestController
 @RequestMapping("/users/tag")
+@Slf4j
 public class TagController {
     @Autowired
     private TagService tagService;
@@ -49,5 +52,25 @@ public class TagController {
         return Result.success();
     }
 
+    /**
+     * 搜索标签
+     * @param tagSearchDTO 标签名称
+     * @return 标签列表
+     */
+    @PostMapping("/search")
+    public Result<List<Tag>> search(@RequestBody TagSearchDTO tagSearchDTO) {
+        log.info("search tag name: " + tagSearchDTO.getQuery());
+        return Result.success(tagService.search(tagSearchDTO.getQuery()));
+    }
+    /**
+     * 获取标签
+     *
+     *
+     *
+     */
 
+    @GetMapping("/select/list")
+    public Result<List<Tag>> get() {
+        return Result.success(tagService.getAll());
+    }
 }

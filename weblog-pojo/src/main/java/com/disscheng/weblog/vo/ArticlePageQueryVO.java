@@ -1,17 +1,20 @@
 package com.disscheng.weblog.vo;
 
 import com.disscheng.weblog.entity.Article;
-import com.disscheng.weblog.entity.Category;
+
+import lombok.Builder;
 import lombok.Data;
 
 import java.io.Serializable;
+
 import java.util.List;
 
 @Data
+@Builder
 public class ArticlePageQueryVO implements Serializable {
+    private long current;
+    private long size;
     private long total;
-    private int current;
-    private int size;
-    private int pages;
+    private long pages;
     private List<Article> data;
 }

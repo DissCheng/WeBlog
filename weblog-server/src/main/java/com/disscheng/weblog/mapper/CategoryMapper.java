@@ -2,11 +2,14 @@ package com.disscheng.weblog.mapper;
 
 import com.disscheng.weblog.dto.CategoryPageQueryDTO;
 import com.github.pagehelper.Page;
+import io.minio.ObjectWriteArgs;
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import com.disscheng.weblog.entity.Category;
 import org.apache.ibatis.annotations.Select;
+
+import java.util.List;
 
 @Mapper
 public interface CategoryMapper {
@@ -37,5 +40,33 @@ public interface CategoryMapper {
      */
     @Delete("delete from t_category where id = #{id}")
     public int delete(Long id);
+    /**
+     * 获取所有属于该分类的文章
+     * @param id 分类id
+     * @return
+     */
+    @Select("select count(*) from t_article_category_rel where category_id = #{id} limit 1")
+    public int getArticles(Long id);
 
+    /**
+     * 获取分类名
+     * @param id 分类id
+     */
+    @Select("select name from t_category where id = #{id}")
+    public String getName(Long id);
+
+
+    /**
+     * 根据articleId获取分类名和分类id
+     * @param articleId 文章id
+     */
+    @Select("select c.* from t_category c,t_article_category_rel r where r.article_id = #{articleId} and r.category_id = c.id")
+    public Category getCategoryByArticleId(Long articleId);
+
+    /**
+     * 根据分类id获取articleId列表
+     * @param categoryId 分类id
+     */
+    @Select("select article_id from t_article_category_rel where category_id = #{categoryId}")
+    public Page<Long> getArticleIdListByCategoryId(Long categoryId);
 }

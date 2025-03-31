@@ -1,4 +1,4 @@
-package com.disscheng.weblog.controller;
+package com.disscheng.weblog.controller.users;
 
 import com.disscheng.weblog.constant.JwtClaimsConstant;
 import com.disscheng.weblog.dto.PassWordUpdateDTO;

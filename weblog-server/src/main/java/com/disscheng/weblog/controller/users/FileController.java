@@ -1,4 +1,4 @@
-package com.disscheng.weblog.controller;
+package com.disscheng.weblog.controller.users;
 
 import com.disscheng.weblog.exception.FileUploadException;
 import com.disscheng.weblog.result.Result;

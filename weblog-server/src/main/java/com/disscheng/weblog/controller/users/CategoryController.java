@@ -1,4 +1,4 @@
-package com.disscheng.weblog.controller;
+package com.disscheng.weblog.controller.users;
 
 
 import com.disscheng.weblog.dto.CategoryDTO;
@@ -7,7 +7,6 @@ import com.disscheng.weblog.entity.Category;
 import com.disscheng.weblog.result.Result;
 import com.disscheng.weblog.service.CategoryService;
 import com.disscheng.weblog.vo.CategoryPageQueryVO;
-import com.github.pagehelper.Page;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;

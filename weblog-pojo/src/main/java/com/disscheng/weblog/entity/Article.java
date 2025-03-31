@@ -1,12 +1,14 @@
 package com.disscheng.weblog.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.Builder;
 import lombok.Data;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Data
+@Builder
 public class Article implements Serializable {
     /**
      *
@@ -24,11 +26,10 @@ public class Article implements Serializable {
     private String title;
     private String cover;
     private String summary;
-    private String content;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updateTime;
-    private Integer is_deleted;
+    private Integer isDeleted;
     private Integer readNum;
 }

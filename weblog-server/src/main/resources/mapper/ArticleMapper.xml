@@ -5,13 +5,13 @@
     <select id="pageQuery" resultType="com.disscheng.weblog.entity.Article">
         SELECT * FROM t_article
         <where>
-            <if test="name!= null and name!= ''">
-                AND name LIKE CONCAT('%', #{name}, '%')
+            <if test="title !=  null">
+                AND title LIKE CONCAT('%', #{title}, '%')
             </if>
-            <if test="startDate!= null">
+            <if test="startDate != null">
                 AND create_time >= #{startDate}
             </if>
-            <if test="endDate!= null">
+            <if test="endDate != null">
                 AND #{endDate} >= create_time
             </if>
 

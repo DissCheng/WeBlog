@@ -10,7 +10,7 @@ import java.util.Date;
 public class ArticlePageQueryDTO implements Serializable {
     private int current;
     private int size;
-    private String name;
+    private String title;
     @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
     private Date startDate;
     @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")

@@ -1,10 +1,12 @@
 package com.disscheng.weblog.entity;
 
+import lombok.Builder;
 import lombok.Data;
 
 import java.io.Serializable;
 
 @Data
+@Builder
 public class ArticleContent implements Serializable {
 
     /**
