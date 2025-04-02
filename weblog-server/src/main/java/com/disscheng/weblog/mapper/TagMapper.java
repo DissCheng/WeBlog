@@ -14,6 +14,13 @@ import java.util.List;
 @Mapper
 public interface TagMapper {
 
+
+    /**
+     * 获取标签总数
+     * @return 标签总数
+     */
+    @Select("select count(1) from t_tag")
+    public int count();
     /**
      * 分页查询标签列表
      * @return 标签列表

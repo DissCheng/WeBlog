@@ -13,6 +13,17 @@ import java.util.List;
 
 @Mapper
 public interface CategoryMapper {
+
+
+    /**
+     * 获取分类总数
+     * @return
+     */
+    @Select("select count(*) from t_category")
+    public int count();
+
+
+
     /**
      * 分页查询分类列表
      * @param categoryPageQueryDTO 查询条件

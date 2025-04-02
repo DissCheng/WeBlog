@@ -2,6 +2,7 @@ package com.disscheng.weblog.service;
 
 import com.disscheng.weblog.dto.*;
 import com.disscheng.weblog.vo.ArticleArchivePageQueryVO;
+import com.disscheng.weblog.vo.ArticleFrontendDetailVO;
 import com.disscheng.weblog.vo.ArticlePageQueryVO;
 import com.disscheng.weblog.vo.ArticleVO;
 
@@ -37,7 +38,12 @@ public interface ArticleService {
      * @return 文章详情
      */
     public ArticleVO getArticleDetail(long id);
-
+    /**
+     * 前台获取文章详情
+     * @param id 文章id
+     * @return 文章详情
+     */
+    public ArticleFrontendDetailVO getArticleFrontendDetail(long id);
     /**
      * 更新文章
      * @param articleUpdateDTO 文章
@@ -58,4 +64,13 @@ public interface ArticleService {
       * @return 文章列表
       */
      public ArticleArchivePageQueryVO archiveList(ArticlePageQueryDTO articlePageQueryDTO);
+
+     /**
+     * 更新文章浏览次数
+     * @param id 文章id
+     */
+     public void updateReadNum(long id);
+
+
+
 }

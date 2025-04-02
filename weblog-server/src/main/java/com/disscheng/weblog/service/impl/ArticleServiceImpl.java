@@ -5,15 +5,19 @@ import com.disscheng.weblog.entity.Article;
 import com.disscheng.weblog.entity.ArticleCategory;
 import com.disscheng.weblog.entity.ArticleContent;
 import com.disscheng.weblog.entity.ArticleTag;
+import com.disscheng.weblog.exception.ArticleDeleteException;
 import com.disscheng.weblog.mapper.ArticleMapper;
 import com.disscheng.weblog.mapper.CategoryMapper;
 import com.disscheng.weblog.mapper.TagMapper;
 import com.disscheng.weblog.service.ArticleService;
+import com.disscheng.weblog.thread.ReadArticle.ReadArticleEvent;
+import com.disscheng.weblog.utils.Markdown.MarkdownUtil;
 import com.disscheng.weblog.vo.*;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,9 +26,7 @@ import java.time.LocalDateTime;
 import java.time.Month;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -36,7 +38,8 @@ public class ArticleServiceImpl implements ArticleService {
     private CategoryMapper categoryMapper;
     @Autowired
     private TagMapper tagMapper;
-
+    @Autowired
+    private ApplicationEventPublisher publisher;
     /**
      * 文章分页查询
      *
@@ -129,21 +132,24 @@ public class ArticleServiceImpl implements ArticleService {
 
     public ArticleVO getArticleDetail(long id) {
         Article article = articleMapper.getArticle(id);
-        String articleContent = articleMapper.getArticleContent(id);
-        long articleCategoryId = articleMapper.getArticleCategory(id);
-        List<Long> articleTag = articleMapper.getArticleTag(id);
-        String articleCategoryName = categoryMapper.getName(articleCategoryId);
-        ArticleVO articleVO = ArticleVO.builder()
-                .id(article.getId())
-                .title(article.getTitle())
-                .cover(article.getCover())
-                .content(articleContent)
-                .summary(article.getSummary())
-                .categoryId(articleCategoryId)
-                .categoryName(articleCategoryName)
-                .tagIds(articleTag)
-                .build();
-        return articleVO;
+        try {
+            String articleContent = articleMapper.getArticleContent(id);
+            Long articleCategoryId = articleMapper.getArticleCategory(id);
+            List<Long> articleTag = articleMapper.getArticleTag(id);
+            String articleCategoryName = categoryMapper.getName(articleCategoryId);
+            ArticleVO articleVO = ArticleVO.builder()
+                    .id(article.getId())
+                    .title(article.getTitle())
+                    .cover(article.getCover())
+                    .content(articleContent)
+                    .summary(article.getSummary())
+                    .categoryId(articleCategoryId)
+                    .categoryName(articleCategoryName)
+                    .tagIds(articleTag)
+                    .build();
+            return articleVO;
+        }catch(NullPointerException e){throw new ArticleDeleteException("文章不存在");}
+
     }
 
     /**
@@ -261,4 +267,48 @@ public class ArticleServiceImpl implements ArticleService {
                 .build();
     }
 
+    /**
+     * 前台文章详情
+     * @param id
+     * @return
+     *
+     */
+    public ArticleFrontendDetailVO getArticleFrontendDetail(long id) {
+        try {
+            Article article = articleMapper.getArticle(id);
+            String articleContent = articleMapper.getArticleContent(id);
+            Long articleCategoryId = articleMapper.getArticleCategory(id);
+            String articleCategoryName = categoryMapper.getName(articleCategoryId);
+            LinkedHashMap nextArticle = new LinkedHashMap();
+            LinkedHashMap preArticle = new LinkedHashMap();
+            Article next = articleMapper.getNextArticle(id);
+            if (next != null) {
+                nextArticle.put("articleId", next.getId());
+                nextArticle.put("articleTitle", next.getTitle());
+            }
+            Article pre = articleMapper.getPreArticle(id);
+            if (pre != null) {
+                preArticle.put("articleId", pre.getId());
+                preArticle.put("articleTitle", pre.getTitle());
+            }
+            return ArticleFrontendDetailVO.builder()
+                    .title(article.getTitle())
+                    .content(MarkdownUtil.convertMarkdown2Html(articleContent))
+                    .createTime(article.getCreateTime())
+                    .categoryId(articleCategoryId)
+                    .categoryName(articleCategoryName)
+                    .readNum(article.getReadNum())
+                    .tags(tagMapper.getTagsByArticleId(id))
+                    .nextArticle(nextArticle)
+                    .preArticle(preArticle)
+                    .build();
+        }catch (NullPointerException e){throw new ArticleDeleteException("文章不存在"); }
+    }
+    /**
+     * 更新文章阅读数
+     * @param id
+     */
+     public void updateReadNum(long id) {
+        publisher.publishEvent(new ReadArticleEvent(this,id));
+     }
 }

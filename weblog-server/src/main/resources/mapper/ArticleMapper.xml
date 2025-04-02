@@ -19,4 +19,11 @@
         ORDER BY id DESC
     </select>
 
+    <!-- 插入文章次日访问量 -->
+    <insert id="insertArticlePvStatistics">
+        INSERT INTO t_statistics_article_pv (pv_date,pv_count,create_time,update_time)  +
+            SELECT pv_date + INTERVAL 1 DAY, pv_count,
+                CONVERT_TZ(NOW(), 'UTC', 'Asia/Shanghai'), CONVERT_TZ(NOW(), 'UTC', 'Asia/Shanghai')
+            FROM t_statistics_article_pv WHERE pv_date = CURDATE() - INTERVAL 1 DAY
+    </insert>
 </mapper>
