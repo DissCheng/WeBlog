@@ -37,6 +37,18 @@ public class UserServiceImpl implements UserService {
         return user;
     }
     /**
+     * 注册
+     * @param userLoginDTO
+     * @return
+     */
+    public User register(UserLoginDTO userLoginDTO) {
+        User user=new User();
+        user.setUserName(userLoginDTO.getUsername());
+        user.setPassWord(userLoginDTO.getPassword());
+        userMapper.insert(user);
+        return userMapper.selectByUsername(userLoginDTO.getUsername());
+    }
+    /**
      * 获取用户信息
      * @return
      */
@@ -63,5 +75,13 @@ public class UserServiceImpl implements UserService {
         user.setPassWord(passWordUpdateDTO.getPassWord());
         userMapper.updateById(user);
         return true;
+    }
+    /**
+     * 获取权限
+     *
+     */
+    public boolean getPermission(){
+        Long id=BaseContext.getUserId();
+        return userMapper.getPermission(id);
     }
 }

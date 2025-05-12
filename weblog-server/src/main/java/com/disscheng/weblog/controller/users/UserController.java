@@ -42,7 +42,19 @@ public class UserController{
         userLoginVO.setJwtToken(token);
         return Result.success(userLoginVO);
     }
-
+    @PostMapping("/register")
+    public Result<UserLoginVO> register(@RequestBody UserLoginDTO user){
+        User userEntity=userService.register(user);
+        Map<String,Object> claims=new HashMap<>();
+        claims.put(JwtClaimsConstant.USER_ID,userEntity.getId());
+        //登录成功返回token
+        String token = JwtUtil.createJwt(jwtProperties.getSecretKey(), jwtProperties.getTtl(), claims);
+        UserLoginVO userLoginVO = new UserLoginVO();
+        userLoginVO.setId(userEntity.getId());
+        userLoginVO.setUserName(user.getUsername());
+        userLoginVO.setJwtToken(token);
+        return Result.success(userLoginVO);
+    }
 
     @PostMapping("/info")
     public Result<UserInfoVO> info(){
@@ -60,5 +72,15 @@ public class UserController{
     @GetMapping("/test")
     public Result<String> test(){
         return Result.success("This is test");
+    }
+
+    @GetMapping("/getPermission")
+    public Result<String> getPermission(){
+        log.info("查询权限");
+        if(userService.getPermission()){
+            return Result.success();
+        }else{
+            return Result.error("无权限");
+        }
     }
 }

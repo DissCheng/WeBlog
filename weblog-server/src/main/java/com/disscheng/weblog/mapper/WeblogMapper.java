@@ -13,7 +13,7 @@ public interface WeblogMapper {
      * 查询设置信息
      * @return
      */
-    @Select("SELECT * FROM t_blog_settings WHERE id = #{id}")
+    @Select("SELECT * FROM t_blog_settings limit 1")
     Setting getSettingDetail(Long id);
     /**
      * 更新设置信息

@@ -7,6 +7,11 @@ spring:
     multipart:
       max-file-size: 100MB
       max-request-size: 100MB
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
 weblog:
   jwt:
     secret-key: weblog-secret-1221331232132133132132131321

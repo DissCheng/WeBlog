@@ -19,7 +19,7 @@ public class WebMvcConfiguration extends WebMvcConfigurationSupport {
     protected void addInterceptors(InterceptorRegistry registry) {
         log.info("拦截器注册成功");
         registry.addInterceptor(jwtInterceptor).addPathPatterns("/**")
-                .excludePathPatterns("/users/login", "/users/register");
+                .excludePathPatterns("/users/login", "/users/register","/mail/MQ/*");
 
     }
 }

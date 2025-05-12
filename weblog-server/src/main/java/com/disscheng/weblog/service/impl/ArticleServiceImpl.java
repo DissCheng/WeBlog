@@ -159,14 +159,14 @@ public class ArticleServiceImpl implements ArticleService {
      */
     @Transactional(rollbackFor = Exception.class)
     public void update(ArticleUpdateDTO articleUpdateDTO) {
-
+        LocalDateTime creatTime=articleMapper.getArticle(articleUpdateDTO.getId()).getCreateTime();
         articleMapper.delete(articleUpdateDTO.getId());
         Article article = Article.builder()
                 .id(0L)
                 .title(articleUpdateDTO.getTitle())
                 .cover(articleUpdateDTO.getCover())
                 .summary(articleUpdateDTO.getSummary())
-                .createTime(LocalDateTime.now())
+                .createTime(creatTime)
                 .updateTime(LocalDateTime.now())
                 .isDeleted(0)
                 .readNum(0)

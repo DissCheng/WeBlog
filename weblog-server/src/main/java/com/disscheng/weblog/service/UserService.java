@@ -14,7 +14,12 @@ public interface UserService {
      * @return 用户信息
      */
     public User login(UserLoginDTO userLoginDTO);
-
+    /**
+     * 注册
+     * @param userLoginDTO 用户注册信息
+     * @return 用户信息
+     */
+    public User register(UserLoginDTO userLoginDTO);
     /**
      * 获取用户信息
      * @return 用户信息
@@ -27,4 +32,10 @@ public interface UserService {
      * @return 是否修改成功
      */
     public boolean updatePassword(PassWordUpdateDTO passWordUpdateDTO);
+
+    /**
+     * 获取权限
+     *
+     */
+    public boolean getPermission();
 }
