@@ -1,0 +1,27 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.disscheng</groupId>
+        <artifactId>weblog-spring-boot</artifactId>
+        <version>${revision}</version>
+    </parent>
+
+    <modules>
+        <module>weblog-comment-api</module>
+        <module>weblog-comment-service</module>
+    </modules>
+    <artifactId>weblog-comment</artifactId>
+    <packaging>pom</packaging>
+
+    <name>weblog-comment</name>
+    <url>http://maven.apache.org</url>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <dependencies>
+
+    </dependencies>
+</project>

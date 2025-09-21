@@ -1,6 +1,6 @@
 spring:
   profiles:
-    active: proc
+    active: dev
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: ${spring.datasource.url}
@@ -15,7 +15,10 @@ spring:
       max-lifetime: 1800000
       connection-timeout: 30000
       connection-test-query: SELECT 1
-
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath*:db/init.sql
 Mybatis:
   mapper-locations: classpath*:mapper/*.xml
   type-aliases-package: com.disscheng.weblog.entity

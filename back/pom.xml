@@ -22,9 +22,10 @@
 
     <!--子模块管理-->
     <modules>
-            <module>weblog-server</module>
-            <module>weblog-pojo</module>
-            <module>weblog-common</module>
+        <module>weblog-server</module>
+        <module>weblog-pojo</module>
+        <module>weblog-common</module>
+        <module>weblog-comment</module>
     </modules>
     <!-- 版本号管理 -->
     <properties>
@@ -49,6 +50,7 @@
         <jackson.version>2.13.2</jackson.version>
         <commonmark.version>0.18.0</commonmark.version>
         <commons-lang3.version>3.12.0</commons-lang3.version>
+        <dubbo.version>3.2.0</dubbo.version>
     </properties>
 
     <!-- 统一依赖管理 -->
@@ -145,6 +147,24 @@
                 <groupId>io.minio</groupId>
                 <artifactId>minio</artifactId>
                 <version>${minio.version}</version>
+            </dependency>
+            <!--dubbo-->
+            <dependency>
+                <groupId>org.apache.dubbo</groupId>
+                <artifactId>dubbo-bom</artifactId>
+                <version>${dubbo.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.dubbo</groupId>
+                <artifactId>dubbo-spring-boot-starter</artifactId>
+                <version>${dubbo.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apach.dubbo</groupId>
+                <artifactId>dubbo-registry-nacos</artifactId>
+                <version>${dubbo.version}</version>
             </dependency>
         </dependencies>
 
