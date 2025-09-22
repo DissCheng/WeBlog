@@ -40,7 +40,16 @@
                     <el-form-item>
                         <!-- 登录按钮，宽度设置为 100% -->
                         <el-button class="w-full mt-2" size="large" :loading="loading" type="primary"
-                            @click="onSubmit">登录</el-button>
+                            @click="onSubmitLogin" v-if="onVisible === 'login'">登录</el-button>
+                        <!-- 注册按钮，宽度设置为 100% -->
+                        <el-button class="w-full mt-2" size="large" :loading="loading" type="primary"
+                            @click="onSubmitRegister" v-if="onVisible === 'register'">注册</el-button>
+                        <!-- 注册-->
+                        <el-button class="w-full mt-2" size="large" type="text" @click="onVisible = 'register'" v-if="
+                            onVisible === 'login'">没有账号？去注册</el-button>
+                        <!-- 注册-->
+                        <el-button class="w-full mt-2" size="large" type="text" @click="onVisible = 'login'"
+                            v-if="onVisible === 'register'">已有账号？去登录</el-button>
                     </el-form-item>
                 </el-form>
             </div>
@@ -51,12 +60,14 @@
 <script setup>
 // 引入 Element Plus 中的用户、锁图标
 import { User, Lock } from '@element-plus/icons-vue'
-import { login } from "@/api/admin/user.js";
-import { setToken, getToken } from '@/composables/cookie'
+import { login, register } from "@/api/admin/user.js";
+import { setToken, getToken, setRefreshToken, getRefreshToken } from '@/composables/cookie'
 import { showMessage } from "@/composables/util"
 import { ref, reactive, onMounted, onBeforeUnmount } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
+import { time } from 'echarts';
+import { set } from 'nprogress';
 const userStore = useUserStore()
 // 定义响应式的表单对象
 const form = reactive({
@@ -83,40 +94,72 @@ const rules = {
         },
     ]
 }
+const onVisible = ref('login')
 // 登录按钮加载
 const loading = ref(false)
 // 登录
-const onSubmit = () => {
+const onSubmitLogin = async () => {
+    const valid = await formRef.value.validate();
+    if (!valid) {
+        return false;
+    }
+
+    loading.value = true;
+    try {
+        const res = await login(form.username, form.password);
+        if (res.code === 1) {
+            const token = res.data.jwtToken;
+            const refreshToken = res.data.refreshToken;
+            setToken(token);
+            setRefreshToken(refreshToken);
+            await userStore.setUserInfo(); // 确保 setUserInfo 是一个异步方法
+            showMessage('登录成功', 'success');
+            router.push('/')
+        } else {
+            showMessage('用户名或密码错误', 'error');
+        }
+    } catch (error) {
+        showMessage('登录失败，请稍后再试', 'error');
+    } finally {
+        loading.value = false;
+    }
+};
+// 注册
+const onSubmitRegister = () => {
     formRef.value.validate((valid) => {
         if (!valid) {
             return false
         }
         loading.value = true;
-        login(form.username, form.password).then((res) => {
+        register(form.username, form.password).then((res) => {
             if (res.code === 1) {
                 let token = res.data.jwtToken;
                 setToken(token)
+                setRefreshToken(res.data.refreshToken)
                 // 获取用户信息，并存储到全局状态中
                 userStore.setUserInfo()
-                console.log(userStore.userInfo.userName)
-                showMessage('登录成功', 'success')
-                router.push('/admin/index')
+
+                showMessage('注册成功', 'success')
+                router.push('/')
             } else {
-                showMessage('用户名或密码错误', 'error')
+                showMessage('注册失败', 'error')
             }
         })
     }).finally(() => {
         loading.value = false;
     });
-
 }
 
-// 按回车键后，执行登录事件
+// 按回车键后，执行
 function onKeyUp(e) {
-    console.log(e)
     if (e.key == 'Enter') {
-        onSubmit()
+        if (onVisible.value === 'login') {
+            onSubmitLogin()
+        } else {
+            onSubmitRegister()
+        }
     }
+
 }
 
 // 添加键盘监听

@@ -229,9 +229,9 @@ import ArticlePVLineChat from '@/components/ArticlePVLineChat.vue'
 // 按日统计文章发布数据
 const articlePublishInfo = ref({})
 getPublishArticleStatisticsInfo().then((res) => {
-    console.log(res)
+
     if (res.code) {
-        console.log(res.code)
+
         articlePublishInfo.value = res.data
     }
 })
@@ -246,10 +246,8 @@ getBaseStatisticsInfo().then(res => {
 // 近一周文章 PV 数据
 const articlePVInfo = ref({})
 getArticlePVStatisticsInfo().then((res) => {
-    console.log(res)
     if (res.code) {
         articlePVInfo.value = res.data
-        console.log(articlePVInfo.value)
     }
 })
 

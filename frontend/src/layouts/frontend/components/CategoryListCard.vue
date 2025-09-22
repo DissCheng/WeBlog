@@ -18,6 +18,7 @@
                 {{ category.name }}
             </a>
         </div>
+
     </div>
 </template>
 

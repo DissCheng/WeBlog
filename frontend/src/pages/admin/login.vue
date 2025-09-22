@@ -30,7 +30,8 @@
                 <el-form class="w-5/6 md:w-2/5" ref="formRef" :rules="rules" :model="form">
                     <el-form-item prop="username">
                         <!-- 输入框组件 -->
-                        <el-input size="large" v-model="form.username" placeholder="请输入用户名" :prefix-icon="User" clearable />
+                        <el-input size="large" v-model="form.username" placeholder="请输入用户名" :prefix-icon="User"
+                            clearable />
                     </el-form-item>
                     <el-form-item prop="password">
                         <!-- 密码框组件 -->
@@ -39,7 +40,10 @@
                     </el-form-item>
                     <el-form-item>
                         <!-- 登录按钮，宽度设置为 100% -->
-                        <el-button class="w-full mt-2" size="large" :loading="loading" type="primary" @click="onSubmit">登录</el-button>
+                        <el-button class="w-full mt-2" size="large" :loading="loading" type="primary"
+                            @click="onSubmit">登录</el-button>
+                        <!-- 注册按钮-->
+                        <el-button class="w-full mt-2" @click="$router.push('/admin/register')">注册</el-button>
                     </el-form-item>
                 </el-form>
             </div>
@@ -53,8 +57,9 @@ import { User, Lock } from '@element-plus/icons-vue'
 import { login } from '@/api/admin/user'
 import { ref, reactive, onMounted, onBeforeUnmount } from 'vue'
 import { useRouter } from 'vue-router'
-import { showMessage} from '@/composables/util'
+import { showMessage } from '@/composables/util'
 import { setToken } from '@/composables/auth'
+import { setRefreshToken } from '@/composables/cookie'
 
 // 定义响应式的表单对象
 const form = reactive({
@@ -87,11 +92,10 @@ const rules = {
 }
 
 const onSubmit = () => {
-    console.log('登录')
     // 先验证 form 表单字段
     formRef.value.validate((valid) => {
         if (!valid) {
-            console.log('表单验证不通过')
+            showMessage('表单验证失败', 'error')
             return false
         }
         // 开始加载
@@ -99,7 +103,6 @@ const onSubmit = () => {
 
         // 调用登录接口
         login(form.username, form.password).then((res) => {
-            console.log(res)
             // 判断是否成功
             if (res.success == true) {
                 // 提示登录成功
@@ -107,10 +110,11 @@ const onSubmit = () => {
 
                 // 存储 Token 到 Cookie 中
                 let token = res.data.token
+                let refreshToken = res.data.refreshToken
                 setToken(token)
-
-                // 跳转到后台首页
-                router.push('/admin/index')
+                setRefreshToken(refreshToken)
+                // 跳转到前台首页
+                router.push('/frontend/index')
             } else {
                 // 获取服务端返回的错误消息
                 let message = res.message
@@ -118,16 +122,16 @@ const onSubmit = () => {
                 showMessage(message, 'error')
             }
         })
-        .finally(() => {
-            // 结束加载
-            loading.value = false
-        })
+            .finally(() => {
+                // 结束加载
+                loading.value = false
+            })
     })
 }
 
 // 按回车键后，执行登录事件
 function onKeyUp(e) {
-    console.log(e)
+
     if (e.key == 'Enter') {
         onSubmit()
     }
@@ -135,7 +139,6 @@ function onKeyUp(e) {
 
 // 添加键盘监听
 onMounted(() => {
-    console.log('添加键盘监听')
     document.addEventListener('keyup', onKeyUp)
 })
 

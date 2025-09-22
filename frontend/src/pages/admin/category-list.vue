@@ -227,7 +227,7 @@ const onSubmit = () => {
 
 // 删除分类
 const deleteCategorySubmit = (row) => {
-    console.log(row)
+
     showModel('是否确定要删除该分类？').then(() => {
         deleteCategory(row.id).then((res) => {
             if (res.code) {
@@ -242,7 +242,7 @@ const deleteCategorySubmit = (row) => {
             }
         })
     }).catch(() => {
-        console.log('取消了')
+
     })
 }
 

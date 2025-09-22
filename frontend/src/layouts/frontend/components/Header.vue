@@ -37,18 +37,18 @@
                     <div class="text-gray-900 ml-1 mr-1 hover:text-blue-700" v-if="!isLogined"
                         @click="$router.push('/login')">登录</div>
                     <!-- 已经登录，展示用户头像 -->
-                    <button id="dropdownDefaultButton" data-dropdown-toggle="dropdown" v-else
-                        class="text-white ml-2 mr-2 md:mr-0 focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm text-center inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-                        type="button">
+                    <button id="dropdownDefaultButton" data-dropdown-toggle="dropdown" v-if="isLogined" class=" text-white ml-2 mr-2 md:mr-0 focus:ring-4 focus:ring-blue-300 font-medium rounded-full
+                        text-sm text-center inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700
+                        dark:focus:ring-blue-800" type="button" @click="toggleDropdown">
                         <!-- 用户登录头像 -->
                         <img class="w-8 h-8 rounded-full" :src="blogSettingsStore.blogSettings.avatar" alt="user photo">
                     </button>
 
                     <!-- Dropdown menu -->
                     <div id="dropdown"
-                        class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow dark:bg-gray-700">
-                        <ul class="py-2 text-sm text-gray-700 dark:text-gray-200"
-                            aria-labelledby="dropdownDefaultButton">
+                        class="z-10 bg-white divide-y divide-gray-100 rounded-lg shadow dark:bg-gray-700 position:absolute top-full">
+                        <ul class="py-2 text-sm text-gray-700 dark:text-gray-200 position:absolute top-full left-0 right-0"
+                            :class="{ 'hidden': !isDropdownShow }">
                             <li>
                                 <a @click="router.push('/admin/index')"
                                     class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
@@ -63,7 +63,7 @@
                                 </a>
                             </li>
                             <li>
-                                <a data-modal-target="popup-modal" data-modal-toggle="popup-modal"
+                                <a v-bind:data-modal-toggle="'popup-modal'"
                                     class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
                                     <svg class="inline w-3 h-3 mb-[2px] mr-1 text-gray-700 dark:text-white"
                                         aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
@@ -178,34 +178,44 @@ import { useBlogSettingsStore } from '@/stores/blogsettings'
 import { useUserStore } from '@/stores/user'
 import { useRouter, useRoute } from 'vue-router'
 import { showMessage } from '@/composables/util'
+import { init } from 'echarts'
+import { watchEffect } from 'vue'
+import { Modal } from 'flowbite'
 
 const route = useRoute()
 
 // 当前路由地址
 const currPath = ref(route.path)
-// 初始化 flowbit 相关组件
-onMounted(() => {
-    initCollapses();
-    initDropdowns();
-    initModals();
-})
+
 
 const router = useRouter()
 
+// 下拉菜单
+const isDropdownShow = ref(false)
 // 引入博客设置信息 store
 const blogSettingsStore = useBlogSettingsStore()
 
 // 是否登录，通过 userStore 中的 userInfo 对象是否有数据来判断
 const userStore = useUserStore()
 // 获取 userInfo 对象所有属性名称的数组
-const keys = Object.keys(userStore.userInfo)
+const keys = ref(Object.keys(userStore.userInfo))
+console.log(keys.value)
 // 若大于零，则表示用户已登录
-const isLogined = ref(keys.length > 0)
+const isLogined = ref(true)
 
 // 退出登录
-const logout = () => {
+function logout() {
     userStore.logout()
     isLogined.value = false
     showMessage('退出登录成功')
 }
+function toggleDropdown() {
+    isDropdownShow.value = !isDropdownShow.value
+}
+// 初始化 flowbit 相关组件
+onMounted(() => {
+    initCollapses()
+    initDropdowns()
+    initModals()
+})
 </script>

@@ -6,6 +6,8 @@ const cookie = useCookies()
 
 // 存储在 Cookie 中的 Token 的 key
 const TOKEN_KEY = 'Authorization'
+    // 存储在 Cookie 中的 Refresh Token 的 key
+const REFRESH_TOKEN_KEY = 'RefreshToken'
 
 // 获取 Token 值
 export function getToken() {
@@ -20,6 +22,21 @@ export function setToken(token) {
 // 删除 Token
 export function removeToken() {
     return cookie.remove(TOKEN_KEY)
+}
+
+// 获取 Refresh Token 值
+export function getRefreshToken() {
+    return cookie.get(REFRESH_TOKEN_KEY)
+}
+
+// 设置 Refresh Token 到 Cookie 中
+export function setRefreshToken(refreshToken) {
+    return cookie.set(REFRESH_TOKEN_KEY, refreshToken)
+}
+
+// 删除 Refresh Token
+export function removeRefreshToken() {
+    return cookie.remove(REFRESH_TOKEN_KEY)
 }
 
 // ============================== 标签页 ==============================

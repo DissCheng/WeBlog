@@ -42,7 +42,7 @@
                                             stroke-width="2"
                                             d="M5 1v3m5-3v3m5-3v3M1 7h18M5 11h10M2 3h16a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z" />
                                     </svg>
-                                    {{ article.createDate }}
+                                    {{ article.createTime }}
 
                                     <!-- 所属分类 -->
                                     <svg class="inline w-3 h-3 ml-5 mr-2 text-gray-400 dark:text-white"

@@ -10,13 +10,26 @@ export function hidePageLoading() {
     nprogress.done()
 }
 
-// 消息提示
+// 弹出消息提示框
+let messageTimer = null;
+
 export function showMessage(message = '提示内容', type = 'success', customClass = '') {
-    return ElMessage({
-        type: type,
-        message,
-        customClass,
-    })
+    // 如果定时器存在，清除定时器
+    if (messageTimer) {
+        clearTimeout(messageTimer);
+    }
+
+    // 设置一个新的定时器
+    messageTimer = setTimeout(() => {
+        ElMessage({
+            type: type,
+            message,
+            customClass,
+        });
+        // 清除定时器
+        messageTimer = null;
+    }, 300); // 防抖时间设置为300毫秒
+    return true;
 }
 // 弹出确认框
 export function showModel(content = '提示内容', type = 'warning', title = '') {

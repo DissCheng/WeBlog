@@ -162,8 +162,7 @@ import Toc from '@/layouts/frontend/components/Toc.vue'
 import 'highlight.js/styles/tokyo-night-dark.css'
 const route = useRoute()
 const router = useRouter()
-// 路由传递过来的文章 ID
-console.log(route.params.articleId)
+
 // 正文 div 引用
 const articleContentRef = ref(null)
 onMounted(() => {
@@ -236,6 +235,18 @@ watch(route, (newRoute, oldRoute) => {
     color: #292525;
     line-height: 150%;
     font-family: PingFang SC, Helvetica Neue, Helvetica, Hiragino Sans GB, Microsoft YaHei, "\5FAE\8F6F\96C5\9ED1", Arial, sans-serif;
+}
+
+.article-content h1 {
+    line-height: 1.5;
+    font-weight: 700;
+    font-synthesis: style;
+    font-size: 28px;
+    margin-top: 40px;
+    margin-bottom: 26px;
+    line-height: 140%;
+    border-bottom: 1px solid rgb(241 245 249);
+    padding-bottom: 15px;
 }
 
 .article-content h2 {

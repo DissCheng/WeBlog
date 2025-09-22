@@ -299,14 +299,14 @@ getTableData()
 
 // 每页展示数量变更事件
 const handleSizeChange = (chooseSize) => {
-    console.log('选择的页码' + chooseSize)
+
     size.value = chooseSize
     getTableData()
 }
 
 // 删除文章
 const deleteArticleSubmit = (row) => {
-    console.log(row)
+
     showModel('是否确定要删除该文章？').then(() => {
         deleteArticle(row.id).then((res) => {
             if (res.code == 0) {
@@ -322,7 +322,7 @@ const deleteArticleSubmit = (row) => {
             getTableData()
         })
     }).catch(() => {
-        console.log('取消了')
+
     })
 }
 
@@ -413,8 +413,7 @@ const onUploadImg = async (files, callback) => {
                 let formData = new FormData()
                 formData.append("file", file);
                 uploadFile(formData).then((res) => {
-                    console.log(res)
-                    console.log('访问路径：' + res.data.url)
+
                     // 调用 callback 函数，回显上传图片
                     callback([res.data.url]);
                 })
@@ -426,7 +425,7 @@ const onUploadImg = async (files, callback) => {
 // 文章分类
 const categories = ref([])
 getCategorySelectList().then((e) => {
-    console.log('获取分类数据')
+
     categories.value = e.data
 })
 
@@ -436,14 +435,14 @@ const tagSelectLoading = ref(false)
 const tags = ref([])
 // 渲染标签数据
 getTagSelectList().then(res => {
-    console.log('标签', res)
+
     tags.value = res.data
 })
 
 
 // 根据用户输入的标签名称，远程模糊查询
 const remoteMethod = (query) => {
-    console.log('远程搜索：' + tags.value)
+
     // 如果用户的查询关键词不为空
     if (query) {
         // 显示 loading
@@ -570,7 +569,7 @@ const goArticleDetailPage = (articleId) => {
 }
 </style>
 
-<style>
+<style scoped>
 .md-editor-footer {
     height: 40px;
 }

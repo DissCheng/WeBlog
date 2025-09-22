@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { getUserInfo } from "@/api/admin/user"
-import { removeToken } from "@/composables/cookie"
+import { removeRefreshToken, removeToken } from "@/composables/cookie"
 import router from "@/router";
 export const useUserStore = defineStore('user', () => {
     // 用户信息
@@ -20,6 +20,7 @@ export const useUserStore = defineStore('user', () => {
     function logout() {
         // 删除 cookie 中的 token 令牌
         removeToken()
+        removeRefreshToken()
             // 重定向到登录页面
         router.push('/login')
             // 删除登录用户信息

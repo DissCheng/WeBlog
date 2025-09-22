@@ -12,6 +12,13 @@ export function getUserInfo() {
 }
 // 修改用户密码
 export function updateAdminPassword(data) {
-    console.log(data)
     return axios.post("users/password/update", data)
+}
+// 注册接口
+export function register(username, password) {
+    return axios.post("users/register", { username, password })
+}
+// 查询权限接口
+export function getPermission() {
+    return axios.get("users/getPermission")
 }

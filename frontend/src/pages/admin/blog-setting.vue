@@ -224,7 +224,7 @@ const onSubmit = () => {
     // 先验证 form 表单字段
     formRef.value.validate((valid) => {
         if (!valid) {
-            console.log('表单验证不通过')
+
             return false
         }
 
@@ -257,7 +257,7 @@ const onSubmit = () => {
 }
 </style>
 
-<style>
+<style scoped>
 /* 解决 textarea :focus 状态下，边框消失的问题 */
 .el-textarea__inner:focus {
     outline: 0 !important;

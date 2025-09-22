@@ -3,7 +3,7 @@ import router from '@/router/index'
 import { getToken } from '@/composables/cookie'
 import { showMessage, showPageLoading, hidePageLoading } from '@/composables/util'
 import { useBlogSettingsStore } from '@/stores/blogsettings'
-
+import { getPermission } from '@/api/admin/user'
 // 全局路由前置守卫
 router.beforeEach((to, from, next) => {
 
@@ -17,6 +17,16 @@ router.beforeEach((to, from, next) => {
         showMessage('请勿重复登录', 'warning')
             // 跳转后台首页
         next({ path: '/admin/index' })
+    } else if (token && to.path.startsWith('/admin')) {
+        //查询是否有权限访问该路由
+        getPermission().then(res => {
+            if (res.code) {
+                next()
+            } else {
+                showMessage('无权限访问该页面', 'warning')
+                next({ path: '/' })
+            }
+        })
     } else if (!to.path.startsWith('/admin')) {
         // 如果访问的非 /admin 前缀路由
         // 引入博客设置 store

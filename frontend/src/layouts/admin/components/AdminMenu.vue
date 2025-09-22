@@ -27,7 +27,7 @@
     </div>
 </template>
 
-<style>
+<style scoped>
 .el-menu {
     background-color: rgb(30 41 59 / 1);
     border-right: 0;

@@ -113,7 +113,6 @@ function initTocData(container) {
     let levels = ['h2', 'h3']
     let headings = container.querySelectorAll(levels)
 
-    console.log(headings)
 
     // 存放组装后的目录标题数据
     let titlesArr = []
