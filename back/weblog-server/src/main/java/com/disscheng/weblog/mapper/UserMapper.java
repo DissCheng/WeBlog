@@ -22,8 +22,8 @@ public interface UserMapper {
      * @param user
      * @return 影响行数
      */
-    @Insert("INSERT INTO t_user (id, username, password, create_time, update_time, is_deleted,permission) " +
-            "VALUES (0, #{userName}, #{passWord}, NOW(), NOW(), false,false)")
+    @Insert("INSERT INTO t_user (id, username, password, create_time, update_time, is_deleted, permission) " +
+            "VALUES (0, #{userName}, #{passWord}, NOW(), NOW(), false, false)")
     public int insert(User user);
     /**
      * 根据用户id查询用户信息

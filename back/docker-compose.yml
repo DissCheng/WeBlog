@@ -1,14 +1,9 @@
 version: '3'
+
 services:
-  web:
-    image: "weblog:1.0"
-    ports:
-      - "8080:8080"
-    volumes:
-      - ./data/web:/app/data
 
   nacos:
-    image: nacos/nacos-server:latest
+    image: nacos/nacos-server:2.0.3
     container_name: weblog-nacos
     ports:
       - "8848:8848"     # Nacos控制台端口
@@ -22,27 +17,78 @@ services:
       - JVM_XMX=512m
       - JVM_XMN=256m
     volumes:
-      - ./data/nacos/logs:/home/nacos/logs
-      - ./data/nacos/conf:/home/nacos/conf
+      - nacos-logs:/home/nacos/logs
+      - nacos-conf:/home/nacos/conf
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
 
   redis:
-    image: "redis:latest"
+    image: "redis:6.2"
     volumes:
-      - ./data/redis:/data
+      - redis-data:/data
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 256M
+        reservations:
+          cpus: '0.5'
+          memory: 128M
 
   mysql:
-    image: "mysql:latest"
+    image: "mysql:8.0"
+    ports:
+      - "3306:3306"
     volumes:
-      - ./data/mysql:/var/lib/mysql
+      - mysql-data:/var/lib/mysql
     environment:
-      MYSQL_ROOT_PASSWORD: 123456 #PassWord
+      MYSQL_ROOT_PASSWORD: 123456
 
   rabbitmq:
-    image: "rabbitmq:latest"
+    image: "rabbitmq:3.10-management"
     volumes:
-      - ./data/rabbitmq:/var/lib/rabbitmq
+      - rabbitmq-data:/var/lib/rabbitmq
 
   rocketmq:
-    image: "rocketmq:latest"
+    image: "apache/rocketmq:4.9.4"
+    ports:
+      - "9876:9876"  # NameServer 端口
+      - "10911:10911"  # Broker 端口
     volumes:
-      -
+      - rocketmq-data:/usr/local/rocketmq/store  # 持久化存储数据
+      - rocketmq-logs:/usr/local/rocketmq/logs  # 持久化日志
+
+
+  web:
+    image: "weblog:1.0"
+    ports:
+      - "8080:8080"
+    volumes:
+      - web-data:/app/data
+    depends_on:
+      - mysql
+      - nacos
+
+volumes:
+  web-data:
+    driver: local
+  nacos-logs:
+    driver: local
+  nacos-conf:
+    driver: local
+  redis-data:
+    driver: local
+  mysql-data:
+    driver: local
+  rabbitmq-data:
+    driver: local
+  rocketmq-data:
+    driver: local
+  rocketmq-logs:
+    driver: local
