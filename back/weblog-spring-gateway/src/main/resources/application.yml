@@ -1,0 +1,13 @@
+spring:
+  cloud:
+    gateway:
+      enabled: true
+
+    nacos:
+      server-addr: localhost:8848
+      discovery:
+        server-addr: localhost:8848
+        port: 8083
+        service: weblog-gateway
+      config:
+        enabled: true

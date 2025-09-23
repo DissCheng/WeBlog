@@ -15,4 +15,5 @@ public class CommentRq {
 
     private String content;
 
+    private Boolean isPrimary;
 }
