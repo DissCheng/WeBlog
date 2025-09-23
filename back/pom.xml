@@ -25,6 +25,8 @@
         <module>weblog-server</module>
         <module>weblog-pojo</module>
         <module>weblog-common</module>
+        <module>weblog-comment</module>
+        <module>weblog-spring-gateway</module>
     </modules>
     <!-- 版本号管理 -->
     <properties>
@@ -49,6 +51,9 @@
         <jackson.version>2.13.2</jackson.version>
         <commonmark.version>0.18.0</commonmark.version>
         <commons-lang3.version>3.12.0</commons-lang3.version>
+        <!-- comment模块 -->
+        <duboo.version>3.2.18</duboo.version>
+        <nacos.version>2.3.2</nacos.version>
     </properties>
 
     <!-- 统一依赖管理 -->
@@ -145,6 +150,16 @@
                 <groupId>io.minio</groupId>
                 <artifactId>minio</artifactId>
                 <version>${minio.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.dubbo</groupId>
+                <artifactId>dubbo-spring-boot-starter</artifactId>
+                <version>${duboo.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.dubbo</groupId>
+                <artifactId>dubbo-nacos-spring-boot-starter</artifactId>
+                <version>${duboo.version}</version>
             </dependency>
         </dependencies>
 

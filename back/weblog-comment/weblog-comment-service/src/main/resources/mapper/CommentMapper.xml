@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.disscheng.weblog.mapper.CommentMapper">
+    <!-- 目录分页查询 -->
+    <select id="pageQuery" resultType="com.disscheng.weblog.pojo.entity.Comment">
+        SELECT * FROM t_comment
+        <where>
+            article_id
+        </where>
+        ORDER BY create_time DESC
+    </select>
+
+    <!-- 插入评论 -->
+    <insert id="insertComment">
+        INSERT INTO t_comment (author_id,reply_id,article_id,content,create_time,update_time,is_deleted)
+        VALUES (#{author_id},#{reply_id},#{article_id},#{content},now(),now(),0)
+    </insert>
+
+    <!-- 删除评论 -->
+    <delete id="deleteComment">
+        DELETE from t_comment where id = #{id} or reply_id = #{reply_id}
+    </delete>
+</mapper>

@@ -164,10 +164,12 @@ CREATE TABLE IF NOT EXISTS  `t_user_role`  (
 
 SET FOREIGN_KEY_CHECKS = 1;
 
-INSERT INTO T_USER (username, password, create_time, update_time, is_deleted, permission)
-SELECT 'SYD', '123456', NOW(), NOW(), 0, 1
-    WHERE NOT EXISTS (SELECT 1 FROM T_USER WHERE username = 'SYD');
+INSERT INTO `t_user` (`id`, `username`, `password`, `create_time`, `update_time`, `is_deleted`, `permission`)
+SELECT 1 , 'SYD', '123456', NOW(), NOW(), 0, 1
+    WHERE NOT EXISTS (SELECT 1 FROM `t_user` WHERE `username` = 'SYD');
 
-INSERT INTO T_BLOG_SETTINGS (username, password, create_time, update_time, is_deleted, permission)
-SELECT 'SYD', '123456', NOW(), NOW(), 0, 1
-    WHERE NOT EXISTS (SELECT 1 FROM T_USER WHERE username = 'SYD');
+INSERT INTO t_blog_settings
+(id, logo, name, author, introduction, avatar,
+ github_homepage, csdn_homepage, gitee_homepage, zhihu_homepage)
+SELECT 1,'','','','','','','','',''
+    WHERE NOT EXISTS (SELECT 1 FROM t_blog_settings);

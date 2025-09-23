@@ -1,3 +1,4 @@
+
 dubbo:
   application:
     name: weblog-comment
@@ -5,4 +6,6 @@ dubbo:
     name: dubbo
     port: -1
   registry:
+    address: nacos://localhost:8848
+  config-center:
     address: nacos://localhost:8848
