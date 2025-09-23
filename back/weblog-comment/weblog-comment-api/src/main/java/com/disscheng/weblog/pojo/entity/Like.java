@@ -1,17 +1,13 @@
 package com.disscheng.weblog.pojo.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.Builder;
-import lombok.Data;
 
 import java.time.LocalDateTime;
 
-@Data
-@Builder
-public class Comment {
+public class Like {
     /**
      *
-     *   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '评论id',
+     *   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '点赞id',
      *   `author_id` bigint(20) unsigned NOT NULL COMMENT '作者id',
      *   `reply_id` bigint(20) unsigned NOT NULL COMMENT '回复评论id',
      *   `article_id` bigint(20) unsigned NOT NULL COMMENT '文章id',

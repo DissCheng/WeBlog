@@ -54,6 +54,9 @@
         <!-- comment模块 -->
         <duboo.version>3.2.18</duboo.version>
         <nacos.version>2.3.2</nacos.version>
+        <!-- spring alibaba -->
+        <spring-alibaba.version>2021.1</spring-alibaba.version>
+        <spring-cloud.version>2021.0.8</spring-cloud.version>
     </properties>
 
     <!-- 统一依赖管理 -->
@@ -160,6 +163,28 @@
                 <groupId>org.apache.dubbo</groupId>
                 <artifactId>dubbo-nacos-spring-boot-starter</artifactId>
                 <version>${duboo.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.alibaba.cloud</groupId>
+                <artifactId>spring-cloud-starter-alibaba-nacos-config</artifactId>
+                <version>${spring-alibaba.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.alibaba.cloud</groupId>
+                <artifactId>spring-cloud-alibaba-starters</artifactId>
+                <version>${spring-alibaba.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-dependencies</artifactId>
+                <version>${spring-cloud.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.alibaba.cloud</groupId>
+                <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
+                <version>${spring-alibaba.version}</version>
             </dependency>
         </dependencies>
 

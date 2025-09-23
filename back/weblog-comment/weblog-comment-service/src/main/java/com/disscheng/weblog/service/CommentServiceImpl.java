@@ -32,6 +32,7 @@ public class CommentServiceImpl implements CommentService {
                         .author_id(commentRq.getAuthor_id())
                         .reply_id(commentRq.getReply_id())
                         .content(commentRq.getContent())
+                        .isPrimary(commentRq.getIsPrimary())
                         .likes(0L)
                         .build()
         );
