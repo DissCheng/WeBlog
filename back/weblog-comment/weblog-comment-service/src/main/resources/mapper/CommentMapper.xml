@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.disscheng.weblog.mapper.CommentMapper">
-    <!-- 目录分页查询 -->
+    <!-- 评论分页查询 -->
     <select id="pageQuery" resultType="com.disscheng.weblog.pojo.entity.Comment">
         SELECT * FROM t_comment
         <where>
@@ -15,6 +15,25 @@
         INSERT INTO t_comment (author_id,reply_id,article_id,content,create_time,update_time,is_deleted)
         VALUES (#{author_id},#{reply_id},#{article_id},#{content},now(),now(),0)
     </insert>
+
+    <!-- 更新评论 -->
+    <update id="updateComment">
+        UPDATE t_comment
+        <set>
+            <if test="content != null and content != ''">
+                content = #{content},
+            </if>
+            <if test="likeCount != null">
+                like_count = #{likeCount},
+            </if>
+            <if test="status != null">
+                status = #{status},
+            </if>
+            update_time = NOW()
+        </set>
+        WHERE id = #{id}
+        AND is_deleted = 0
+    </update>
 
     <!-- 删除评论 -->
     <delete id="deleteComment">

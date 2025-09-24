@@ -23,6 +23,7 @@ public class Comment {
      *   `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '最后一次更新时间',
      *   `is_deleted` tinyint(2) NOT NULL DEFAULT '0' COMMENT '删除标志位：0：未删除 1：已删除',
      */
+
     private Long id;
 
     private Long author_id;

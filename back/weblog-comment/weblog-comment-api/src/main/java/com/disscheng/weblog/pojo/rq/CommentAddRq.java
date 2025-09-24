@@ -1,4 +1,4 @@
-package com.disscheng.weblog.pojo.dto;
+package com.disscheng.weblog.pojo.rq;
 
 
 import lombok.Builder;
@@ -6,7 +6,7 @@ import lombok.Data;
 
 @Builder
 @Data
-public class CommentRq {
+public class CommentAddRq {
     private Long author_id;
 
     private Long reply_id;

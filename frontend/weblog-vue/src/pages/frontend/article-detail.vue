@@ -124,34 +124,25 @@
                             </div>
                         </nav>
                     </article>
-
-
                 </div>
+              <Comment></Comment>
             </div>
 
             <!-- 右边侧边栏，占用一列 -->
             <aside class="col-span-4 md:col-span-1">
-
-
                 <!-- 文章目录 -->
                 <Toc></Toc>
-
             </aside>
         </div>
-
     </main>
     <!-- 返回顶部 -->
     <ScrollToTopButton></ScrollToTopButton>
-
     <Footer></Footer>
 </template>
 
 <script setup>
 import Header from '@/layouts/frontend/components/Header.vue'
 import Footer from '@/layouts/frontend/components/Footer.vue'
-import UserInfoCard from '@/layouts/frontend/components/UserInfoCard.vue'
-import TagListCard from '@/layouts/frontend/components/TagListCard.vue'
-import CategoryListCard from '@/layouts/frontend/components/CategoryListCard.vue'
 import { getArticleDetail, updateReadNum } from '@/api/frontend/article'
 import { useRoute, useRouter } from 'vue-router'
 import { ref, watch, onMounted } from 'vue'
@@ -160,11 +151,14 @@ import ScrollToTopButton from '@/layouts/frontend/components/ScrollToTopButton.v
 import Toc from '@/layouts/frontend/components/Toc.vue'
 // 代码高亮样式
 import 'highlight.js/styles/tokyo-night-dark.css'
+import Comment from "@/components/Comment.vue";
+
+
 const route = useRoute()
 const router = useRouter()
-
 // 正文 div 引用
 const articleContentRef = ref(null)
+
 onMounted(() => {
     // 使用 MutationObserver 监视 DOM 的变化
     const observer = new MutationObserver(mutationsList => {

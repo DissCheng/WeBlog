@@ -162,6 +162,13 @@ CREATE TABLE IF NOT EXISTS  `t_user_role`  (
                                 INDEX `idx_username`(`username`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 3 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '用户角色表' ROW_FORMAT = DYNAMIC;
 
+-- ----------------------------
+-- Table structure for t_user_role
+-- ----------------------------
+
+
+
+
 SET FOREIGN_KEY_CHECKS = 1;
 
 INSERT INTO `t_user` (`id`, `username`, `password`, `create_time`, `update_time`, `is_deleted`, `permission`)

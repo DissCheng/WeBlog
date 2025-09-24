@@ -12,6 +12,17 @@ spring:
     port: 5672
     username: guest
     password: guest
+  cloud:
+    nacos:
+      server-addr: localhost:8848
+      discovery:
+        server-addr: localhost:8848
+        port: 8080
+        service: weblog-service
+        group: weblog
+      config:
+        enabled: true
+        group: weblog
 weblog:
   jwt:
     secret-key: weblog-secret-1221331232132133132132131321
@@ -22,3 +33,5 @@ minio:
   accessKey: root
   secretKey: 12345678
   bucketName: weblog
+
+
