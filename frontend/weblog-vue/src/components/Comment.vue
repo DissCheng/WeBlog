@@ -12,7 +12,7 @@
             <label for="comment" class="sr-only">Your comment</label>
             <textarea id="comment" rows="4"
                       class="w-full px-0 text-sm text-gray-900 bg-white border-0 dark:bg-gray-800 focus:ring-0 dark:text-white dark:placeholder-gray-400"
-                      placeholder="发表一个友善的评论吧..." required></textarea>
+                      :placeholder="replyArticlePlaceholderText" required></textarea>
           </div>
           <div class="flex items-center justify-between px-3 py-2 border-t dark:border-gray-600">
             <div class="inline-flex items-center py-2.5 px-4 text-xs font-medium text-center text-white
@@ -26,7 +26,7 @@ bg-sky-600 rounded-lg focus:ring-4 focus:ring-sky-200 dark:focus:ring-sky-900 ho
                      viewBox="0 0 24 24">
                   <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
                         stroke-width="2"
-                        d="M15 9h0M9 9h0m12 3a9 9 0 1 1-18 0 9 9 0 0 1 18 0ZM7 13c0 1 .5 2.4 1.5 3.2a5.5 5.5 0 0 0 7 0c1-.8 1.5-2.2 1.5-3.2 0 0-2 1-5 1s-5-1-5-1Z" />
+                        d="M15 9h0M9 9h0m12 3a9 9 0 1 1-18 0 9 9 0 0 1 18 0ZM7 13c0 1 .5 2.4 1.5 3.2a5.5 5.5 0 0 0 7 0c1-.8 1.5-2.2 1.5-3.2 0 0-2 1-5 1s-5-1-5-1Z"/>
                 </svg>
               </div>
             </div>
@@ -44,7 +44,7 @@ bg-sky-600 rounded-lg focus:ring-4 focus:ring-sky-200 dark:focus:ring-sky-900 ho
             <svg v-else class="w-10 h-10 text-gray-400 rounded-full dark:text-gray-400" aria-hidden="true"
                  xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
               <path
-                  d="M10 0a10 10 0 1 0 10 10A10.011 10.011 0 0 0 10 0Zm0 5a3 3 0 1 1 0 6 3 3 0 0 1 0-6Zm0 13a8.949 8.949 0 0 1-4.951-1.488A3.987 3.987 0 0 1 9 13h2a3.987 3.987 0 0 1 3.951 3.512A8.949 8.949 0 0 1 10 18Z" />
+                  d="M10 0a10 10 0 1 0 10 10A10.011 10.011 0 0 0 10 0Zm0 5a3 3 0 1 1 0 6 3 3 0 0 1 0-6Zm0 13a8.949 8.949 0 0 1-4.951-1.488A3.987 3.987 0 0 1 9 13h2a3.987 3.987 0 0 1 3.951 3.512A8.949 8.949 0 0 1 10 18Z"/>
             </svg>
           </div>
           <!-- 右边评论信息 -->
@@ -67,17 +67,18 @@ bg-sky-600 rounded-lg focus:ring-4 focus:ring-sky-200 dark:focus:ring-sky-900 ho
                 删除
               </div>
             </div>
-            <div v-if="comment.childCommentsCnt > 0" class="text-xs text-gray-400 cursor-pointer ml-4 hover:text-sky-600">
+            <div v-if="comment.childCommentsCnt > 0"
+                 class="text-xs text-gray-400 cursor-pointer ml-4 hover:text-sky-600">
               <!-- 二级评论回复 -->
               <div class="text-gray-400 cursor-pointer ml-4 hover:text-sky-600"
-                   @click="showChildReply()">
-                {{ comment.expanded ? '收起回复': `展开全部${comment.childCommentsCnt}条回复`}}
+                   @click="showChildReply(index)">
+                {{ comment.expanded ? '收起回复' : `展开全部${comment.childCommentsCnt}条回复` }}
               </div>
             </div>
           </div>
         </div>
         <!-- 一级评论回复表单 -->
-        <form v-if ="comment.isShowReplyForm">
+        <form v-if="comment.isShowReplyForm">
           <div
               class="w-full mb-4 border border-gray-200 rounded-lg bg-gray-50 dark:bg-gray-700 dark:border-gray-600">
             <div class="px-4 py-2 bg-white rounded-t-lg dark:bg-gray-800">
@@ -98,7 +99,7 @@ bg-sky-600 rounded-lg focus:ring-4 focus:ring-sky-200 dark:focus:ring-sky-900 ho
                        viewBox="0 0 24 24">
                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
                           stroke-width="2"
-                          d="M15 9h0M9 9h0m12 3a9 9 0 1 1-18 0 9 9 0 0 1 18 0ZM7 13c0 1 .5 2.4 1.5 3.2a5.5 5.5 0 0 0 7 0c1-.8 1.5-2.2 1.5-3.2 0 0-2 1-5 1s-5-1-5-1Z" />
+                          d="M15 9h0M9 9h0m12 3a9 9 0 1 1-18 0 9 9 0 0 1 18 0ZM7 13c0 1 .5 2.4 1.5 3.2a5.5 5.5 0 0 0 7 0c1-.8 1.5-2.2 1.5-3.2 0 0-2 1-5 1s-5-1-5-1Z"/>
                   </svg>
                 </div>
               </div>
@@ -107,7 +108,6 @@ bg-sky-600 rounded-lg focus:ring-4 focus:ring-sky-200 dark:focus:ring-sky-900 ho
         </form>
         <!-- 二级评论 -->
         <!-- Meta 信息 -->
-
         <div class="ml-12" v-if="comment.expanded">
           <div v-for="(childComment, index2) in comment.childComments" :key="index2">
             <!-- 头像、昵称、评论内容 -->
@@ -120,7 +120,7 @@ bg-sky-600 rounded-lg focus:ring-4 focus:ring-sky-200 dark:focus:ring-sky-900 ho
                      aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor"
                      viewBox="0 0 20 20">
                   <path
-                      d="M10 0a10 10 0 1 0 10 10A10.011 10.011 0 0 0 10 0Zm0 5a3 3 0 1 1 0 6 3 3 0 0 1 0-6Zm0 13a8.949 8.949 0 0 1-4.951-1.488A3.987 3.987 0 0 1 9 13h2a3.987 3.987 0 0 1 3.951 3.512A8.949 8.949 0 0 1 10 18Z" />
+                      d="M10 0a10 10 0 1 0 10 10A10.011 10.011 0 0 0 10 0Zm0 5a3 3 0 1 1 0 6 3 3 0 0 1 0-6Zm0 13a8.949 8.949 0 0 1-4.951-1.488A3.987 3.987 0 0 1 9 13h2a3.987 3.987 0 0 1 3.951 3.512A8.949 8.949 0 0 1 10 18Z"/>
                 </svg>
               </div>
               <!-- 昵称 -->
@@ -143,7 +143,7 @@ bg-sky-600 rounded-lg focus:ring-4 focus:ring-sky-200 dark:focus:ring-sky-900 ho
               </div>
             </div>
             <!-- 二级评论回复表单 -->
-            <form v-if ="childComment.isShowReplyForm">
+            <form v-if="childComment.isShowReplyForm">
               <div
                   class="w-full mb-4 border border-gray-200 rounded-lg bg-gray-50 dark:bg-gray-700 dark:border-gray-600">
                 <div class="px-4 py-2 bg-white rounded-t-lg dark:bg-gray-800">
@@ -164,7 +164,7 @@ bg-sky-600 rounded-lg focus:ring-4 focus:ring-sky-200 dark:focus:ring-sky-900 ho
                            viewBox="0 0 24 24">
                         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
                               stroke-width="2"
-                              d="M15 9h0M9 9h0m12 3a9 9 0 1 1-18 0 9 9 0 0 1 18 0ZM7 13c0 1 .5 2.4 1.5 3.2a5.5 5.5 0 0 0 7 0c1-.8 1.5-2.2 1.5-3.2 0 0-2 1-5 1s-5-1-5-1Z" />
+                              d="M15 9h0M9 9h0m12 3a9 9 0 1 1-18 0 9 9 0 0 1 18 0ZM7 13c0 1 .5 2.4 1.5 3.2a5.5 5.5 0 0 0 7 0c1-.8 1.5-2.2 1.5-3.2 0 0-2 1-5 1s-5-1-5-1Z"/>
                       </svg>
                     </div>
                   </div>
@@ -179,15 +179,15 @@ bg-sky-600 rounded-lg focus:ring-4 focus:ring-sky-200 dark:focus:ring-sky-900 ho
 </template>
 
 
-
 <script setup>
-import { ref, reactive, onMounted, nextTick } from 'vue'
+import {ref, reactive, onMounted, nextTick} from 'vue'
 import {initPopovers, initTooltips} from "flowbite";
 import {getComment} from "@/api/frontend/comment.js";
-import {useRouter} from "vue-router";
-const total = ref(0)
+import {useRoute, useRouter} from "vue-router";
+
+let total = ref(0)
 //当前路由
-const route = useRouter()
+const route = useRoute()
 
 // 评论数组
 const comments = ref([
@@ -246,34 +246,65 @@ const comments = ref([
     "isShowReplyForm": null
   }
 ])
-onMounted({
-  //TODO 获取当前文章一级评论信息
 
-});
 
-//获取文章评论
-function refreshArticleDetail(articleId) {
-  getComment(route.params.articleId).then((res) => {
-    // 该文章不存在(错误码为 20010)
-    if (!res.code && res.data == null) {
-      // 手动跳转 404 页面
-      router.push({ name: 'NotFound' })
-      return
-    }
-
-    article.value = res.data
+//获取文章一级评论
+function refreshComment() {
+  getComment({
+    articleId: route.params.articleId,
+    isPrimary: true,
+  }).then((res) => {
+    comments.value = res.data
+    total = comments.value.length
   })
 }
+
+//获取一级评论的二级评论
+function refreshSonComment(index) {
+  getComment({
+    articleId: route.params.articleId,
+    replyId: comments.value[index].id,
+    isPrimary: false,
+  }).then((res) => {
+    comments.value = res.data
+    total = comments.value.length
+  })
+}
+
+//提交评论
+function addComment(index1, index2) {
+  let replyId = -1;
+  let isPrimary = false;
+  if (index1 === -1) {
+    isPrimary = true;
+  } else {
+    if (index2 === -1) {
+      replyId = comments.value[index1].id;
+    }else{
+      replyId = comments.value[index1].childComments[index2].id;
+    }
+    isPrimary = false;
+  }
+  addComment({
+    articleId: route.params.articleId,
+    replyId: comments.value[index].id,
+    isPrimary: false,
+  }).then((res) => {
+
+  })
+}
+
 // 回复 textarea 的 placeholder 提示文字
+const replyArticlePlaceholderText = ref('发表一个友善的评论吧...')
 const replyPlaceholderText = ref('发表一个友善的评论吧...')
 // 展示回复表单
-const showReplyForm = (index1,index2, nickname, replyCommentId, parentCommentId) => {
+const showReplyForm = (index1, index2, nickname, replyCommentId, parentCommentId) => {
   // 先将评论数组中一级评论的所有 isShowReplyForm 字段设置为 false
   let beforeComment = 0;
-  if(index2===-1){
+  if (index2 === -1) {
     //一级评论
     beforeComment = comments.value[index1].isShowReplyForm;
-  }else{
+  } else {
     //二级评论
     beforeComment = comments.value[index1].childComments[index2].isShowReplyForm;
   }
@@ -283,26 +314,25 @@ const showReplyForm = (index1,index2, nickname, replyCommentId, parentCommentId)
       child.isShowReplyForm = false;
     });
   });
-  if(index2===-1){
+  if (index2 === -1) {
     // 拿到当前下标的评论
     let afterComment = comments.value[index1]
     afterComment.isShowReplyForm = !beforeComment
-  }else{
+  } else {
     // 拿到当前下标的评论
     let afterComment = comments.value[index1].childComments[index2];
     afterComment.isShowReplyForm = !beforeComment
   }
   // 动态设置评论回复表单中的 textarea 的 placeholder 提示文字
   replyPlaceholderText.value = '回复 @' + nickname + ':'
-  console.log(replyPlaceholderText)
   nextTick(() => {
-      initPopovers(), initTooltips()
+    initPopovers(), initTooltips()
   })
 }
 // 展示子回复
-const showChildReply = (index) =>{
+const showChildReply = (index) => {
+  // TODO 获取子评论
   comments.value[index].expanded = !comments.value[index].expanded;
-  //TODO 获取子回复
 }
 
 </script>

@@ -1,4 +1,4 @@
-<template>
+大学<template>
     <div>
         <!-- 表头分页查询条件， shadow="never" 指定 card 卡片组件没有阴影 -->
         <el-card shadow="never" class="mb-5">

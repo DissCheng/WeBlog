@@ -13,6 +13,7 @@ public class Comment {
      *
      *   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '评论id',
      *   `author_id` bigint(20) unsigned NOT NULL COMMENT '作者id',
+     *   `nick_name` varchar(20) unsigned NOT NULL COMMENT '用户名'
      *   `reply_id` bigint(20) unsigned NOT NULL COMMENT '回复评论id',
      *   `article_id` bigint(20) unsigned NOT NULL COMMENT '文章id',
      *   `content` varchar(120) NOT NULL DEFAULT '' COMMENT '评论内容',
@@ -27,6 +28,8 @@ public class Comment {
     private Long id;
     //回复人
     private Long author_id;
+    //用户名
+    private String nick_name;
     //回复对象
     private Long reply_id;
     //文章id
