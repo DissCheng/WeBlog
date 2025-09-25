@@ -1,9 +1,11 @@
 package com.disscheng.weblog.controller;
 
 import com.disscheng.weblog.api.CommentService;
+import com.disscheng.weblog.pojo.Response;
 import com.disscheng.weblog.pojo.entity.Comment;
 import com.disscheng.weblog.pojo.rq.CommentAddRq;
 import com.disscheng.weblog.pojo.rq.CommentQueryRq;
+import com.disscheng.weblog.pojo.vo.CommentQueryVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.stereotype.Repository;
@@ -19,27 +21,46 @@ public class CommentController {
     private CommentService commentService;
 
     @PostMapping("/addComment")
-    public boolean addComment(@RequestBody CommentAddRq commentAddRq){
+    public Response<Boolean> addComment(@RequestBody CommentAddRq commentAddRq){
         commentService.addComment(commentAddRq);
-        return true;
+        return Response.<Boolean>builder()
+                .code(200)
+                .msg("success")
+                .data(true)
+                .build();
     }
 
     @PostMapping("/deleteComment")
-    public boolean deleteComment(@RequestParam Long commentId){
+    public Response<Boolean> deleteComment(@RequestParam Long commentId){
         commentService.deleteComment(commentId);
-        return true;
+        return Response.<Boolean>builder()
+                .code(200)
+                .msg("success")
+                .data(true)
+                .build();
     }
 
     @PostMapping("/likeComment")
-    public boolean likeComment(@RequestParam Long commentId){
+    public Response<Boolean> likeComment(@RequestParam Long commentId){
         commentService.likeComment(commentId);
-        return true;
+        return Response.<Boolean>builder()
+                .code(200)
+                .msg("success")
+                .data(true)
+                .build();
     }
 
 
-    @PostMapping("/queryComment/top")
-    public List<Comment> queryComment(@RequestBody CommentQueryRq commentQueryRq){
-        return commentService.queryComment(commentQueryRq);
+    @PostMapping("/queryComment")
+    public Response<CommentQueryVo> queryComment(@RequestBody CommentQueryRq commentQueryRq){
+        CommentQueryVo commentQueryVo = CommentQueryVo.builder()
+                .comment(commentService.queryComment(commentQueryRq))
+                .build();
+        return Response.<CommentQueryVo>builder()
+                .code(200)
+                .msg("success")
+                .data(commentQueryVo)
+                .build();
     }
 
 }

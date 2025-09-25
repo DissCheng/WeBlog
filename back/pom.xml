@@ -27,6 +27,7 @@
         <module>weblog-common</module>
         <module>weblog-comment</module>
         <module>weblog-spring-gateway</module>
+        <module>weblog-context-starter</module>
     </modules>
     <!-- 版本号管理 -->
     <properties>

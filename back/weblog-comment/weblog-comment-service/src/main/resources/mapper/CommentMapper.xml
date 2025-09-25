@@ -2,12 +2,25 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.disscheng.weblog.mapper.CommentMapper">
     <!-- 评论分页查询 -->
-    <select id="pageQuery" resultType="com.disscheng.weblog.pojo.entity.Comment">
+    <select id="queryComment" resultType="com.disscheng.weblog.pojo.entity.Comment">
         SELECT * FROM t_comment
         <where>
-            article_id
+            <if test="isPrimary != null">
+                isPrimary = #{isPrimary}
+            </if>
+            <if test="articleId != null">
+                articleId = #{articleId}
+            </if>
+            <if test="replyId != null">
+                replyId = #{replyId}
+            </if>
         </where>
         ORDER BY create_time DESC
+        LIMIT #{offset}, #{pageSize}
+    </select>
+
+    <!-- 游标查询 -->
+    <select id="cursorQuery" resultType="com.disscheng.weblog.pojo.entity.Comment">
     </select>
 
     <!-- 插入评论 -->
@@ -34,9 +47,4 @@
         WHERE id = #{id}
         AND is_deleted = 0
     </update>
-
-    <!-- 删除评论 -->
-    <delete id="deleteComment">
-        DELETE from t_comment where id = #{id} or reply_id = #{reply_id}
-    </delete>
 </mapper>

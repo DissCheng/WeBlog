@@ -1,5 +1,6 @@
 package com.disscheng.weblog.mapper;
 
+import com.disscheng.weblog.pojo.dto.CommentQueryDto;
 import com.disscheng.weblog.pojo.entity.Comment;
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Mapper;
@@ -16,5 +17,5 @@ public interface CommentMapper {
 
     public void updateComment(Comment comment);
 
-    public List<Comment> queryComment(Comment comment);
+    public List<Comment> queryComment(CommentQueryDto commentQueryDto);
 }

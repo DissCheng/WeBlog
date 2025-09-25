@@ -1,5 +1,10 @@
 spring:
-    cloud:
+  weblog:
+    jwt:
+      secret-key: weblog-secret-1221331232132133132132131321
+      Ttl: 3600000 # 1 hour in milliseconds
+      token-name: jwtToken
+  cloud:
       gateway:
         # ========== 2. 路由清单 ==========
         routes:

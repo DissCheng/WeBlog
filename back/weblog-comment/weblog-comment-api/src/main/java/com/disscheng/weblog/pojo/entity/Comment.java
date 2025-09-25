@@ -25,26 +25,28 @@ public class Comment {
      */
 
     private Long id;
-
+    //回复人
     private Long author_id;
-
+    //回复对象
     private Long reply_id;
-
+    //文章id
     private Long article_id;
-
+    //文章内容
     private String content;
-
+    //点赞数
     private Long likes;
-
+    //点踩数
     private Long unlikes;
-
+    //是否为一级评论
     private Boolean isPrimary;
-
+    //回复数
+    private Long replies;
+    //创建时间
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
-
+    //更新时间
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updateTime;
-
+    //是否有效
     private Boolean is_deleted;
 }
