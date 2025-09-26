@@ -1,3 +1,4 @@
+
 spring:
   profiles:
     active: dev
@@ -39,3 +40,5 @@ dubbo:
     address: nacos://localhost:8848
   config-center:
     address: nacos://localhost:8848
+server:
+  port: 8082

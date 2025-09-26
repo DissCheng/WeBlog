@@ -12,6 +12,16 @@ spring:
     port: 5672
     username: guest
     password: guest
+  cloud:
+    nacos:
+      config:
+        server-addr: localhost:8848
+        group: weblog
+      discovery:
+        service: weblog-comment
+        server-addr: localhost:8848
+        port: 8082
+        group: weblog
 
 weblog:
   jwt:

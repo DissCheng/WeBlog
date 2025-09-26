@@ -2,9 +2,9 @@ import axios from "@/axios";
 
 // 获取博客设置详情
 export function getBlogSettingsDetail() {
-    return axios.get("/users/blog/settings/detail")
+    return axios.get("weblog/users/blog/settings/detail")
 }
 
 export function updateBlogSettings(data) {
-    return axios.post("/users/blog/settings/update", data)
+    return axios.post("weblog/users/blog/settings/update", data)
 }

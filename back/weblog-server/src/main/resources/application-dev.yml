@@ -17,7 +17,7 @@ spring:
       server-addr: localhost:8848
       discovery:
         server-addr: localhost:8848
-        port: 8080
+        port: 8081
         service: weblog-service
         group: weblog
       config:

@@ -16,7 +16,8 @@
           </div>
           <div class="flex items-center justify-between px-3 py-2 border-t dark:border-gray-600">
             <div class="inline-flex items-center py-2.5 px-4 text-xs font-medium text-center text-white
-bg-sky-600 rounded-lg focus:ring-4 focus:ring-sky-200 dark:focus:ring-sky-900 hover:bg-sky-700">
+bg-sky-600 rounded-lg focus:ring-4 focus:ring-sky-200 dark:focus:ring-sky-900 hover:bg-sky-700"
+            @click="submitCommentForm(-1,-1)">
               发送
             </div>
             <div class="flex ps-0 space-x-1 rtl:space-x-reverse sm:ps-2">
@@ -89,7 +90,8 @@ bg-sky-600 rounded-lg focus:ring-4 focus:ring-sky-200 dark:focus:ring-sky-900 ho
             </div>
             <div class="flex items-center justify-between px-3 py-2 border-t dark:border-gray-600">
               <div class="inline-flex items-center py-2.5 px-4 text-xs font-medium text-center text-white
-bg-sky-600 rounded-lg focus:ring-4 focus:ring-sky-200 dark:focus:ring-sky-900 hover:bg-sky-700">
+bg-sky-600 rounded-lg focus:ring-4 focus:ring-sky-200 dark:focus:ring-sky-900 hover:bg-sky-700"
+                   @click="submitCommentForm(index,-1)">
                 发送
               </div>
               <div class="flex ps-0 space-x-1 rtl:space-x-reverse sm:ps-2">
@@ -154,7 +156,8 @@ bg-sky-600 rounded-lg focus:ring-4 focus:ring-sky-200 dark:focus:ring-sky-900 ho
                 </div>
                 <div class="flex items-center justify-between px-3 py-2 border-t dark:border-gray-600">
                   <div class="inline-flex items-center py-2.5 px-4 text-xs font-medium text-center text-white
-bg-sky-600 rounded-lg focus:ring-4 focus:ring-sky-200 dark:focus:ring-sky-900 hover:bg-sky-700">
+bg-sky-600 rounded-lg focus:ring-4 focus:ring-sky-200 dark:focus:ring-sky-900 hover:bg-sky-700"
+                  @click="submitCommentForm(index,index2)">
                     发送
                   </div>
                   <div class="flex ps-0 space-x-1 rtl:space-x-reverse sm:ps-2">
@@ -182,8 +185,9 @@ bg-sky-600 rounded-lg focus:ring-4 focus:ring-sky-200 dark:focus:ring-sky-900 ho
 <script setup>
 import {ref, reactive, onMounted, nextTick} from 'vue'
 import {initPopovers, initTooltips} from "flowbite";
-import {getComment} from "@/api/frontend/comment.js";
+import {getComment,addComment} from "@/api/frontend/comment.js";
 import {useRoute, useRouter} from "vue-router";
+import {showMessage} from "@/composables/util.js";
 
 let total = ref(0)
 //当前路由
@@ -272,8 +276,8 @@ function refreshSonComment(index) {
 }
 
 //提交评论
-function addComment(index1, index2) {
-  let replyId = -1;
+function submitCommentForm(index1, index2) {
+  let replyId = null;
   let isPrimary = false;
   if (index1 === -1) {
     isPrimary = true;
@@ -285,12 +289,16 @@ function addComment(index1, index2) {
     }
     isPrimary = false;
   }
+  console.log(route.params.articleId)
   addComment({
-    articleId: route.params.articleId,
-    replyId: comments.value[index].id,
-    isPrimary: false,
+    "articleId": route.params.articleId,
+    "replyId": replyId,
+    "isPrimary": isPrimary,
+    "content": replyPlaceholderText.value
   }).then((res) => {
-
+    if(res.code!==200){
+      showMessage(res.data.message)
+    }
   })
 }
 

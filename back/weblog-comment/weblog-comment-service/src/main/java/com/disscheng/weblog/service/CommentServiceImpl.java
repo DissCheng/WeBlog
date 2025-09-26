@@ -26,9 +26,9 @@ public class CommentServiceImpl implements CommentService {
     public boolean addComment(CommentAddRq commentAddRq) {
         commentMapper.insertComment(
                 Comment.builder()
-                        .article_id(commentAddRq.getArticle_id())
+                        .article_id(commentAddRq.getArticleId())
                         .author_id(BaseContext.getUserId())
-                        .reply_id(commentAddRq.getReply_id())
+                        .reply_id(commentAddRq.getReplyId())
                         .content(commentAddRq.getContent())
                         .isPrimary(commentAddRq.getIsPrimary())
                         .likes(0L)
