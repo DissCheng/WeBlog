@@ -27,16 +27,26 @@ public class CommentServiceImpl implements CommentService {
         commentMapper.insertComment(
                 Comment.builder()
                         .article_id(commentAddRq.getArticleId())
+                        .to_author_id(commentAddRq.getToAuthorId())
                         .author_id(BaseContext.getUserId())
                         .reply_id(commentAddRq.getReplyId())
+                        .root_id(commentAddRq.getRootId())
                         .content(commentAddRq.getContent())
-                        .isPrimary(commentAddRq.getIsPrimary())
+                        .is_primary(commentAddRq.getIsPrimary())
                         .likes(0L)
-                        .unlikes(0L)
                         .is_deleted(false)
                         .replies(0L)
                         .build()
         );
+        Comment rootComment = commentMapper.selectComment(commentAddRq.getRootId());
+        if(rootComment!=null){
+            commentMapper.updateComment(
+                    Comment.builder()
+                            .id(commentAddRq.getRootId())
+                            .replies(rootComment.getReplies()+1)
+                            .build()
+            );
+        }
         return true;
     }
 
@@ -56,18 +66,17 @@ public class CommentServiceImpl implements CommentService {
     public List<Comment> queryComment(CommentQueryRq commentQueryRq) {
         //查询一级评论
         CommentQueryDto commentQueryDto = CommentQueryDto.builder()
-                .replyId(commentQueryRq.getReplyId())
                 .articleId(commentQueryRq.getArticleId())
+                .rootId(commentQueryRq.getRootId())
                 .isPrimary(commentQueryRq.getIsPrimary())
                 .offset((commentQueryRq.getPageNum()-1)*commentQueryRq.getPageSize())
                 .pageSize(commentQueryRq.getPageSize())
                 .build();
         if(commentQueryRq.getIsPrimary()){
-            commentMapper.queryComment(commentQueryDto);
+            return commentMapper.queryComment(commentQueryDto);
         }//查询二级评论
         else{
-            commentMapper.queryComment(commentQueryDto);
+            return commentMapper.queryComment(commentQueryDto);
         }
-        return Collections.emptyList();
     }
 }

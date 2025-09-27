@@ -1,10 +1,11 @@
 import axios from "@/axios.js"
 
 // 获取评论
-export function getComment(data){
-    return axios.get("/weblog/article/comment/getComment",data)
+export function getComment(queryObj){
+    return axios.get('/weblog/article/comment/queryComment', {
+        params: queryObj
+    })
 }
-
 // 提交评论
 export function addComment(data){
     return axios.post("/weblog/article/comment/addComment",data)

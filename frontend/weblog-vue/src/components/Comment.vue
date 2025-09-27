@@ -12,7 +12,8 @@
             <label for="comment" class="sr-only">Your comment</label>
             <textarea id="comment" rows="4"
                       class="w-full px-0 text-sm text-gray-900 bg-white border-0 dark:bg-gray-800 focus:ring-0 dark:text-white dark:placeholder-gray-400"
-                      :placeholder="replyArticlePlaceholderText" required></textarea>
+                      :placeholder="replyArticlePlaceholderText" required
+                      v-model="articleCommentContext"></textarea>
           </div>
           <div class="flex items-center justify-between px-3 py-2 border-t dark:border-gray-600">
             <div class="inline-flex items-center py-2.5 px-4 text-xs font-medium text-center text-white
@@ -68,12 +69,12 @@ bg-sky-600 rounded-lg focus:ring-4 focus:ring-sky-200 dark:focus:ring-sky-900 ho
                 删除
               </div>
             </div>
-            <div v-if="comment.childCommentsCnt > 0"
+            <div v-if="comment.replies > 0"
                  class="text-xs text-gray-400 cursor-pointer ml-4 hover:text-sky-600">
               <!-- 二级评论回复 -->
               <div class="text-gray-400 cursor-pointer ml-4 hover:text-sky-600"
                    @click="showChildReply(index)">
-                {{ comment.expanded ? '收起回复' : `展开全部${comment.childCommentsCnt}条回复` }}
+                {{ comment.expanded ? '收起回复' : `展开全部${comment.replies}条回复` }}
               </div>
             </div>
           </div>
@@ -86,7 +87,8 @@ bg-sky-600 rounded-lg focus:ring-4 focus:ring-sky-200 dark:focus:ring-sky-900 ho
               <label for="comment" class="sr-only">Your comment</label>
               <textarea id="comment" rows="4"
                         class="w-full px-0 text-sm text-gray-900 bg-white border-0 dark:bg-gray-800 focus:ring-0 dark:text-white dark:placeholder-gray-400"
-                        :placeholder="replyPlaceholderText" required></textarea>
+                        :placeholder="replyPlaceholderText" required
+                        v-model="commentContext"></textarea>
             </div>
             <div class="flex items-center justify-between px-3 py-2 border-t dark:border-gray-600">
               <div class="inline-flex items-center py-2.5 px-4 text-xs font-medium text-center text-white
@@ -126,7 +128,15 @@ bg-sky-600 rounded-lg focus:ring-4 focus:ring-sky-200 dark:focus:ring-sky-900 ho
                 </svg>
               </div>
               <!-- 昵称 -->
-              <div class="text-xs text-[#FB7299] font-bold">{{ childComment.nickname }}</div>
+              <!-- 昵称 -->
+              <div class="text-xs text-[#FB7299] font-bold">
+                {{ childComment.nickname }}
+                <!-- 【回复 @xxx】 -->
+                <span v-if="childComment.replyNickname" class="text-gray-400 font-normal ml-1 mr-1">回复
+                                    <span class="text-sky-600 font-normal text-sm">@{{ childComment.replyNickname }}</span>
+                                    <span class="text-gray-400"> :</span>
+                                </span>
+              </div>
               <!-- 评论内容 -->
               <div class="text-sm dark:text-gray-400">{{ childComment.content }}</div>
             </div>
@@ -152,7 +162,8 @@ bg-sky-600 rounded-lg focus:ring-4 focus:ring-sky-200 dark:focus:ring-sky-900 ho
                   <label for="comment" class="sr-only">Your comment</label>
                   <textarea id="comment" rows="4"
                             class="w-full px-0 text-sm text-gray-900 bg-white border-0 dark:bg-gray-800 focus:ring-0 dark:text-white dark:placeholder-gray-400"
-                            :placeholder="replyPlaceholderText" required></textarea>
+                            :placeholder="replyPlaceholderText" required
+                            v-model="commentContext"></textarea>
                 </div>
                 <div class="flex items-center justify-between px-3 py-2 border-t dark:border-gray-600">
                   <div class="inline-flex items-center py-2.5 px-4 text-xs font-medium text-center text-white
@@ -183,7 +194,7 @@ bg-sky-600 rounded-lg focus:ring-4 focus:ring-sky-200 dark:focus:ring-sky-900 ho
 
 
 <script setup>
-import {ref, reactive, onMounted, nextTick} from 'vue'
+import {ref, computed,reactive, onMounted, nextTick} from 'vue'
 import {initPopovers, initTooltips} from "flowbite";
 import {getComment,addComment} from "@/api/frontend/comment.js";
 import {useRoute, useRouter} from "vue-router";
@@ -192,8 +203,11 @@ import {showMessage} from "@/composables/util.js";
 let total = ref(0)
 //当前路由
 const route = useRoute()
-
+//评论内容
+const commentContext = ref('')
+const articleCommentContext = ref('')
 // 评论数组
+/*
 const comments = ref([
   {
 
@@ -249,86 +263,156 @@ const comments = ref([
     ],
     "isShowReplyForm": null
   }
-])
+])*/
 
+const rawComments = ref([])
+const rawSonComments = ref([])
+// 带外挂的评论数组（响应式）
+const childComments = computed(() =>
+    rawSonComments.value.map(item => (reactive({
+      ...item,               // 后端字段
+      nickname: "用户"+item.author_id,
+      replyNickname: "用户"+item.to_author_id,
+      childComments: [],
+      childCommentsCnt: 0,
+      expanded: false,
+      isShowReplyForm: false
+    })))
+)
+const comments = computed(() =>
+    rawComments.value.map(item => (reactive({
+      ...item,               // 后端字段
+      nickname: "用户"+item.author_id,
+      replyNickname: null,
+      childComments: childComments,
+      childCommentsCnt: 0,
+      expanded: false,
+      isShowReplyForm: false
+    })))
+)
+
+onMounted(()=> {
+      refreshComment()
+    }
+)
 
 //获取文章一级评论
 function refreshComment() {
+  rawComments.value=[]
   getComment({
     articleId: route.params.articleId,
     isPrimary: true,
+    pageSize: 10,
+    pageNum: 1
   }).then((res) => {
-    comments.value = res.data
+    rawComments.value = res.data.comment
     total = comments.value.length
   })
 }
 
 //获取一级评论的二级评论
 function refreshSonComment(index) {
+  rawSonComments.value = []
   getComment({
     articleId: route.params.articleId,
-    replyId: comments.value[index].id,
+    rootId: comments.value[index].id,
     isPrimary: false,
+    pageSize: 10,
+    pageNum: 1
   }).then((res) => {
-    comments.value = res.data
+    rawSonComments.value = res.data.comment
     total = comments.value.length
   })
 }
 
 //提交评论
 function submitCommentForm(index1, index2) {
-  let replyId = null;
-  let isPrimary = false;
+  let replyId = null
+  let rootId = null
+  let isPrimary = false
+  let context = ''
+  let toAuthorId = null
+
   if (index1 === -1) {
     isPrimary = true;
+    context = articleCommentContext.value
+    addComment({
+      "articleId": route.params.articleId,
+      "replyId": replyId,
+      "rootId": rootId,
+      "isPrimary": isPrimary,
+      "content": context
+    }).then((res) => {
+      if(res.code!==200){
+        showMessage(res.data.message)
+      }else{
+        showMessage("发送成功",'success')
+      }
+      commentContext.value=''
+      articleCommentContext.value=''
+      refreshComment()
+    })
   } else {
+    showReplyForm(index1,index2,"")
     if (index2 === -1) {
-      replyId = comments.value[index1].id;
+      replyId = comments.value[index1].id
+      toAuthorId = comments.value[index1].author_id
     }else{
-      replyId = comments.value[index1].childComments[index2].id;
+      replyId = comments.value[index1].childComments[index2].id
+      toAuthorId = comments.value[index1].childComments[index2].author_id
     }
-    isPrimary = false;
+
+    rootId = comments.value[index1].id;
+    context = commentContext.value
+    isPrimary = false
+    addComment({
+      "articleId": route.params.articleId,
+      "toAuthorId": toAuthorId,
+      "replyId": replyId,
+      "rootId": rootId,
+      "isPrimary": isPrimary,
+      "content": context
+    }).then((res) => {
+      if(res.code!==200){
+        showMessage(res.data.message)
+      }else{
+        showMessage("发送成功",'success')
+      }
+      commentContext.value=''
+      articleCommentContext.value=''
+      refreshSonComment(index1)
+      comments.value[index1].replies++;
+    })
   }
-  console.log(route.params.articleId)
-  addComment({
-    "articleId": route.params.articleId,
-    "replyId": replyId,
-    "isPrimary": isPrimary,
-    "content": replyPlaceholderText.value
-  }).then((res) => {
-    if(res.code!==200){
-      showMessage(res.data.message)
-    }
-  })
 }
 
 // 回复 textarea 的 placeholder 提示文字
 const replyArticlePlaceholderText = ref('发表一个友善的评论吧...')
 const replyPlaceholderText = ref('发表一个友善的评论吧...')
 // 展示回复表单
-const showReplyForm = (index1, index2, nickname, replyCommentId, parentCommentId) => {
+const showReplyForm = (index1, index2, nickname) => {
   // 先将评论数组中一级评论的所有 isShowReplyForm 字段设置为 false
-  let beforeComment = 0;
+  let beforeComment = 0
   if (index2 === -1) {
     //一级评论
-    beforeComment = comments.value[index1].isShowReplyForm;
+    beforeComment = comments.value[index1].isShowReplyForm
   } else {
     //二级评论
-    beforeComment = comments.value[index1].childComments[index2].isShowReplyForm;
+    beforeComment = comments.value[index1].childComments[index2].isShowReplyForm
   }
   comments.value.forEach(c => {
-    c.isShowReplyForm = false;
+    c.isShowReplyForm = false
     c.childComments.forEach(child => {
-      child.isShowReplyForm = false;
-    });
-  });
+      child.isShowReplyForm = false
+    })
+  })
   if (index2 === -1) {
     // 拿到当前下标的评论
     let afterComment = comments.value[index1]
     afterComment.isShowReplyForm = !beforeComment
   } else {
     // 拿到当前下标的评论
-    let afterComment = comments.value[index1].childComments[index2];
+    let afterComment = comments.value[index1].childComments[index2]
     afterComment.isShowReplyForm = !beforeComment
   }
   // 动态设置评论回复表单中的 textarea 的 placeholder 提示文字
@@ -339,13 +423,18 @@ const showReplyForm = (index1, index2, nickname, replyCommentId, parentCommentId
 }
 // 展示子回复
 const showChildReply = (index) => {
+  // 先将评论数组中一级评论的所有 isShowReplyForm 字段设置为 false
+  let beforeComment = comments.value[index].expanded
+  comments.value.forEach(c => {
+    c.expanded = false
+  })
+
   // TODO 获取子评论
-  comments.value[index].expanded = !comments.value[index].expanded;
+  refreshSonComment(index)
+  comments.value[index].expanded = !beforeComment
 }
 
 </script>
-
-
 <style scoped>
 
 </style>

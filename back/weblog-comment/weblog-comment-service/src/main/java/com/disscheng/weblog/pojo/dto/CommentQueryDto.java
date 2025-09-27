@@ -10,6 +10,8 @@ public class CommentQueryDto {
 
     private Long replyId;
 
+    private Long rootId;
+
     private Integer offset;
 
     private Integer pageSize;

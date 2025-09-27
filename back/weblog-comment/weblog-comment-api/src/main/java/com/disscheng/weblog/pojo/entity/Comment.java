@@ -28,20 +28,20 @@ public class Comment {
     private Long id;
     //回复人
     private Long author_id;
-    //用户名
-    private String nick_name;
     //回复对象
+    private Long to_author_id;
+    //回复评论
     private Long reply_id;
+    //一级评论
+    private Long root_id;
     //文章id
     private Long article_id;
     //文章内容
     private String content;
     //点赞数
     private Long likes;
-    //点踩数
-    private Long unlikes;
     //是否为一级评论
-    private Boolean isPrimary;
+    private Boolean is_primary;
     //回复数
     private Long replies;
     //创建时间

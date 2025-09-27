@@ -51,8 +51,8 @@ public class CommentController {
     }
 
 
-    @PostMapping("/queryComment")
-    public Response<CommentQueryVo> queryComment(@RequestBody CommentQueryRq commentQueryRq){
+    @GetMapping("/queryComment")
+    public Response<CommentQueryVo> queryComment(CommentQueryRq commentQueryRq){
         CommentQueryVo commentQueryVo = CommentQueryVo.builder()
                 .comment(commentService.queryComment(commentQueryRq))
                 .build();

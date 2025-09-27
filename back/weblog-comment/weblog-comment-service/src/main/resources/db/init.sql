@@ -1,7 +1,9 @@
 CREATE TABLE IF NOT EXISTS `t_comment` (
     `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '评论id',
     `author_id` bigint(20) unsigned NOT NULL COMMENT '作者id',
+    `to_author_id` bigint(20) unsigned COMMENT '回复对象id',
     `reply_id` bigint(20) unsigned COMMENT '回复评论id',
+    `root_id` bigint(20) unsigned COMMENT '一级评论id',
     `article_id` bigint(20) unsigned NOT NULL COMMENT '文章id',
     `content` varchar(120) NOT NULL DEFAULT '' COMMENT '评论内容',
     `likes` bigint(20) unsigned NOT NULL DEFAULT 0 COMMENT '点赞数',

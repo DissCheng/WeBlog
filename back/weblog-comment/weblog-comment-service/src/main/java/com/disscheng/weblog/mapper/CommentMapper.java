@@ -4,6 +4,7 @@ import com.disscheng.weblog.pojo.dto.CommentQueryDto;
 import com.disscheng.weblog.pojo.entity.Comment;
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
 
@@ -18,4 +19,7 @@ public interface CommentMapper {
     public void updateComment(Comment comment);
 
     public List<Comment> queryComment(CommentQueryDto commentQueryDto);
+
+    @Select(value = "SELECT * FROM t_comment WHERE id=#{id}")
+    public Comment selectComment(Long id);
 }

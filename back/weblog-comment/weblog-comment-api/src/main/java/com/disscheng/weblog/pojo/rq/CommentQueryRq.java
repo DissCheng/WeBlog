@@ -14,6 +14,8 @@ public class CommentQueryRq {
 
     private Long replyId;
 
+    private Long rootId;
+
     private Integer pageNum;
 
     private Integer pageSize;
