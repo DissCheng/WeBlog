@@ -19,6 +19,12 @@ spring:
     init:
       mode: always
       schema-locations: classpath*:db/init.sql
+  redis:
+    host: localhost
+    port: 6379
+    timeout: 2000ms
+    database: 0
+
 Mybatis:
   mapper-locations: classpath*:mapper/*.xml
   type-aliases-package: com.disscheng.weblog.entity

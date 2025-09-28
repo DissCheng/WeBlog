@@ -10,11 +10,16 @@ import com.disscheng.weblog.pojo.entity.Comment;
 import com.disscheng.weblog.pojo.rq.CommentQueryRq;
 import org.apache.dubbo.config.annotation.DubboService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
+import java.time.ZoneOffset;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @DubboService
 @Service
@@ -22,6 +27,11 @@ public class CommentServiceImpl implements CommentService {
 
     @Autowired
     private CommentMapper commentMapper;
+
+    @Autowired
+    private RedisTemplate<String,Comment> redisTemplate;
+
+    private static String REDIS_COMMENT_KEY = "weblog:comment:";
 
     @Override
     @Transactional(propagation=Propagation.REQUIRED)
@@ -66,7 +76,13 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public List<Comment> queryComment(CommentQueryRq commentQueryRq) {
-        //查询一级评论
+        //查询一级评论先从缓存中取
+        if(commentQueryRq.getIsPrimary()&&Boolean.TRUE.equals(redisTemplate.hasKey(REDIS_COMMENT_KEY + commentQueryRq.getArticleId()))){
+            return new ArrayList<>(Objects.requireNonNull(redisTemplate.opsForZSet()
+                    .range(REDIS_COMMENT_KEY + commentQueryRq.getArticleId(), (long) (commentQueryRq.getPageNum() - 1) * commentQueryRq.getPageSize(), ((long) commentQueryRq.getPageNum() * commentQueryRq.getPageSize()))));
+        }
+
+        //查询二级评论或者缓存未命中
         CommentQueryDto commentQueryDto = CommentQueryDto.builder()
                 .articleId(commentQueryRq.getArticleId())
                 .rootId(commentQueryRq.getRootId())
@@ -74,11 +90,11 @@ public class CommentServiceImpl implements CommentService {
                 .offset((commentQueryRq.getPageNum()-1)*commentQueryRq.getPageSize())
                 .pageSize(commentQueryRq.getPageSize())
                 .build();
-        if(commentQueryRq.getIsPrimary()){
-            return commentMapper.queryComment(commentQueryDto);
-        }//查询二级评论
-        else{
-            return commentMapper.queryComment(commentQueryDto);
-        }
+        List<Comment> ans = commentMapper.queryComment(commentQueryDto);
+        ans.forEach((c)->
+                redisTemplate.opsForZSet().addIfAbsent(REDIS_COMMENT_KEY + commentQueryRq.getArticleId(),c,c.getCreateTime().toInstant(ZoneOffset.UTC).toEpochMilli())
+        );
+        redisTemplate.expire(REDIS_COMMENT_KEY + commentQueryRq.getArticleId(), Duration.ofMinutes(30));
+        return commentMapper.queryComment(commentQueryDto);
     }
 }

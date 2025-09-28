@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 import com.google.common.util.concurrent.RateLimiter;
 
+import java.util.concurrent.TimeUnit;
+
 @RestController
 @RequestMapping("/article/comment/")
 public class CommentController {
@@ -17,8 +19,7 @@ public class CommentController {
     @Autowired
     private CommentService commentService;
 
-    @Value()
-    private RateLimiter rateLimiter = RateLimiter.create();
+    private RateLimiter rateLimiter = RateLimiter.create(10000);
 
     @PostMapping("/addComment")
     public Response<Boolean> addComment(@RequestBody CommentAddRq commentAddRq){
@@ -53,6 +54,12 @@ public class CommentController {
 
     @GetMapping("/queryComment")
     public Response<CommentQueryVo> queryComment(CommentQueryRq commentQueryRq){
+        if(!rateLimiter.tryAcquire(0, TimeUnit.SECONDS)){
+            return Response.<CommentQueryVo>builder()
+                    .code(429)
+                    .msg("服务器繁忙，请稍后重试")
+                    .build();
+        }
         CommentQueryVo commentQueryVo = CommentQueryVo.builder()
                 .comment(commentService.queryComment(commentQueryRq))
                 .build();
