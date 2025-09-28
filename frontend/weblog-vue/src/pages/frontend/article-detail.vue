@@ -91,7 +91,7 @@
                             <!-- basis-1/2 用于占用 flex 布局的一半空间 -->
                             <div class="basis-1/2">
                                 <!-- h-full 指定高度占满 -->
-                                <a v-if="article.preArticle"
+                                <a v-if="article.preArticle.articleId"
                                     @click="router.push('/article/' + article.preArticle.articleId)"
                                     class="cursor-pointer flex flex-col h-full p-4 mr-3 text-base font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:border-blue-500 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
                                     <div>
@@ -108,7 +108,7 @@
 
                             <div class="basis-1/2">
                                 <!-- text-right 指定文字居右显示 -->
-                                <a v-if="article.nextArticle"
+                                <a v-if="article.nextArticle.articleId"
                                     @click="router.push('/article/' + article.nextArticle.articleId)"
                                     class="cursor-pointer flex flex-col h-full text-right p-4 text-base font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:border-blue-500 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
                                     <div>
@@ -173,7 +173,6 @@ onMounted(() => {
             }
         }
     })
-
     // 配置监视子节点的变化
     const config = { childList: true, subtree: true }
     // 开始观察正文内容变化

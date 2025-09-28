@@ -2,16 +2,13 @@ package com.disscheng.weblog.controller;
 
 import com.disscheng.weblog.api.CommentService;
 import com.disscheng.weblog.pojo.Response;
-import com.disscheng.weblog.pojo.entity.Comment;
 import com.disscheng.weblog.pojo.rq.CommentAddRq;
 import com.disscheng.weblog.pojo.rq.CommentQueryRq;
 import com.disscheng.weblog.pojo.vo.CommentQueryVo;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.stereotype.Repository;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
+import com.google.common.util.concurrent.RateLimiter;
 
 @RestController
 @RequestMapping("/article/comment/")
@@ -19,6 +16,9 @@ public class CommentController {
 
     @Autowired
     private CommentService commentService;
+
+    @Value()
+    private RateLimiter rateLimiter = RateLimiter.create();
 
     @PostMapping("/addComment")
     public Response<Boolean> addComment(@RequestBody CommentAddRq commentAddRq){

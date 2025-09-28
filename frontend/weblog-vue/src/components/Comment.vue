@@ -194,7 +194,7 @@ bg-sky-600 rounded-lg focus:ring-4 focus:ring-sky-200 dark:focus:ring-sky-900 ho
 
 
 <script setup>
-import {ref, computed,reactive, onMounted, nextTick} from 'vue'
+import {ref, computed, watch, reactive, onMounted, nextTick} from 'vue'
 import {initPopovers, initTooltips} from "flowbite";
 import {getComment,addComment} from "@/api/frontend/comment.js";
 import {useRoute, useRouter} from "vue-router";
@@ -207,64 +207,6 @@ const route = useRoute()
 const commentContext = ref('')
 const articleCommentContext = ref('')
 // 评论数组
-/*
-const comments = ref([
-  {
-
-    "id": 39818,
-    "avatar": "https://qh.qlogo.cn/g?b=sdk&ek=AQCCUxlJ6SzcyLnoceicwiaOoqHLfHPDJ48xj7dsbLzfP3LPC0YFw9ibWW1UaIicy2vIIZvUpLDf&s=100&t=1690161385",
-    "nickname": "嘻嘻",
-    "website": null,
-    "content": "头像和昵称可以自动获取了\uD83D\uDE03",
-    "createTime": "2024-03-09 09:33:46",
-    "replyNickname": null,
-    "childCommentsCnt": 0,
-    "childComments": [],
-    "expanded": false,
-    "isShowReplyForm": null
-  },
-  {
-    "id": 39813,
-    "avatar": "https://qh.qlogo.cn/g?b=sdk&ek=AQDW4PNnLEibrRIicSnnZZrBD2siaNCiaiaQec1LEccHQRM7IJun9EAoLh4vU0iasibTHjTKbCFic1VC&s=100&t=1593000563",
-    "nickname": "SYD",
-    "website": null,
-    "content": "观望\uD83E\uDD11",
-    "createTime": "2024-03-06 13:41:56",
-    "replyNickname": null,
-    "childCommentsCnt": 2,
-    "expanded": false,
-    "childComments": [
-      {
-        "id": 39814,
-        "avatar": "https://qh.qlogo.cn/g?b=sdk&ek=AQAJ99lfkKA9TldbMpTOicsyfib30JOuNnqdaFehfOzYz8qEQo3f7JbY24mCKYoZ5meJibLeuDq&s=100&t=1681803828",
-        "nickname": "DissCheng",
-        "website": null,
-        "content": "欢迎欢迎\uD83D\uDE0E",
-        "createTime": "2024-03-07 11:52:30",
-        "replyNickname": null,
-        "childComments": null,
-        "childCommentsCnt": 0,
-        "expanded": false,
-        "isShowReplyForm": null
-      },
-      {
-        "id": 39815,
-        "avatar": "https://qh.qlogo.cn/g?b=sdk&ek=AQAJ99lfkKA9TldbMpTOicsyfib30JOuNnqdaFehfOzYz8qEQo3f7JbY24mCKYoZ5meJibLeuDq&s=100&t=1681803828",
-        "nickname": "Diss",
-        "website": null,
-        "content": "欢迎欢迎\uD83D\uDE0E",
-        "createTime": "2024-03-07 11:52:30",
-        "replyNickname": null,
-        "childComments": null,
-        "childCommentsCnt": 0,
-        "expanded": false,
-        "isShowReplyForm": null
-      }
-    ],
-    "isShowReplyForm": null
-  }
-])*/
-
 const rawComments = ref([])
 const rawSonComments = ref([])
 // 带外挂的评论数组（响应式）
@@ -295,6 +237,8 @@ onMounted(()=> {
       refreshComment()
     }
 )
+
+watch(()=>route.params.articleId, (value, oldValue, onCleanup)=>refreshComment())
 
 //获取文章一级评论
 function refreshComment() {
