@@ -24,9 +24,15 @@
     </select>
 
     <!-- 插入评论 -->
-    <insert id="insertComment">
-        INSERT INTO t_comment (author_id,to_author_id,reply_id,root_id,article_id,content,is_primary,create_time,update_time,is_deleted)
-        VALUES (#{author_id},#{to_author_id},#{reply_id},#{root_id},#{article_id},#{content},#{is_primary},now(),now(),0)
+    <insert id="insertComment"
+            useGeneratedKeys="true"
+            keyProperty="id">          <!-- 对应 Comment 实体里的主键属性名 -->
+        INSERT INTO t_comment
+        (author_id, to_author_id, reply_id, root_id, article_id,
+        content, is_primary, create_time, update_time, is_deleted)
+        VALUES
+        (#{authorId}, #{toAuthorId}, #{replyId}, #{rootId}, #{articleId},
+        #{content}, #{isPrimary}, NOW(), NOW(), 0)
     </insert>
 
     <!-- 更新评论 -->
@@ -36,6 +42,17 @@
             <if test="replies != null">
                 replies = #{replies},
             </if>
+            update_time = NOW()
+        </set>
+        WHERE id = #{id}
+        AND is_deleted = 0
+    </update>
+
+    <!-- 更新评论回复数 -->
+    <update id="updateCommentReplies">
+        UPDATE t_comment
+        <set>
+            replies = replies+1,
             update_time = NOW()
         </set>
         WHERE id = #{id}

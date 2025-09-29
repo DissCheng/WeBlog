@@ -1,13 +1,20 @@
 package com.disscheng.weblog.pojo.entity;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
+import java.beans.ConstructorProperties;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Comment {
     /**
      *
@@ -27,23 +34,23 @@ public class Comment {
 
     private Long id;
     //回复人
-    private Long author_id;
+    private Long authorId;
     //回复对象
-    private Long to_author_id;
+    private Long toAuthorId;
     //回复评论
-    private Long reply_id;
+    private Long replyId;
     //一级评论
-    private Long root_id;
+    private Long rootId;
     //文章id
-    private Long article_id;
+    private Long articleId;
     //文章内容
     private String content;
     //点赞数
     private Long likes;
-    //是否为一级评论
-    private Boolean is_primary;
     //回复数
     private Long replies;
+    //是否为一级评论
+    private Boolean isPrimary;
     //创建时间
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
@@ -51,5 +58,5 @@ public class Comment {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updateTime;
     //是否有效
-    private Boolean is_deleted;
+    private Boolean isDeleted;
 }

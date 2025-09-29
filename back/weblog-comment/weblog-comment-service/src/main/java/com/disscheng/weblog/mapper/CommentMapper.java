@@ -18,6 +18,8 @@ public interface CommentMapper {
 
     public void updateComment(Comment comment);
 
+    public void updateCommentReplies(Comment comment);
+
     public List<Comment> queryComment(CommentQueryDto commentQueryDto);
 
     @Select(value = "SELECT * FROM t_comment WHERE id=#{id}")

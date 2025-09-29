@@ -213,8 +213,8 @@ const rawSonComments = ref([])
 const childComments = computed(() =>
     rawSonComments.value.map(item => (reactive({
       ...item,               // 后端字段
-      nickname: "用户"+item.author_id,
-      replyNickname: "用户"+item.to_author_id,
+      nickname: "用户"+item.authorId,
+      replyNickname: "用户"+item.toAuthorId,
       childComments: [],
       childCommentsCnt: 0,
       expanded: false,
@@ -224,7 +224,7 @@ const childComments = computed(() =>
 const comments = computed(() =>
     rawComments.value.map(item => (reactive({
       ...item,               // 后端字段
-      nickname: "用户"+item.author_id,
+      nickname: "用户"+item.authorId,
       replyNickname: null,
       childComments: childComments,
       childCommentsCnt: 0,
@@ -300,10 +300,10 @@ function submitCommentForm(index1, index2) {
     showReplyForm(index1,index2,"")
     if (index2 === -1) {
       replyId = comments.value[index1].id
-      toAuthorId = comments.value[index1].author_id
+      toAuthorId = comments.value[index1].authorId
     }else{
       replyId = comments.value[index1].childComments[index2].id
-      toAuthorId = comments.value[index1].childComments[index2].author_id
+      toAuthorId = comments.value[index1].childComments[index2].authorId
     }
 
     rootId = comments.value[index1].id;

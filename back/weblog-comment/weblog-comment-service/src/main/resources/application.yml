@@ -20,11 +20,15 @@ spring:
       mode: always
       schema-locations: classpath*:db/init.sql
   redis:
-    host: localhost
+    host: 127.0.0.1
     port: 6379
-    timeout: 2000ms
+    password:
     database: 0
-
+    lettuce:
+      pool:
+        max-idle: 16
+        max-active: 32
+        min-idle: 8
 Mybatis:
   mapper-locations: classpath*:mapper/*.xml
   type-aliases-package: com.disscheng.weblog.entity

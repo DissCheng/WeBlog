@@ -1,6 +1,7 @@
 package com.disscheng.weblog.service;
 
 
+import com.alibaba.fastjson2.JSON;
 import com.disscheng.weblog.api.CommentService;
 import com.disscheng.weblog.context.BaseContext;
 import com.disscheng.weblog.mapper.CommentMapper;
@@ -8,56 +9,81 @@ import com.disscheng.weblog.pojo.dto.CommentQueryDto;
 import com.disscheng.weblog.pojo.rq.CommentAddRq;
 import com.disscheng.weblog.pojo.entity.Comment;
 import com.disscheng.weblog.pojo.rq.CommentQueryRq;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.dubbo.config.annotation.DubboService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
+import java.time.LocalDateTime;
 import java.time.ZoneOffset;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 @DubboService
 @Service
+@Slf4j
 public class CommentServiceImpl implements CommentService {
 
     @Autowired
     private CommentMapper commentMapper;
 
     @Autowired
-    private RedisTemplate<String,Comment> redisTemplate;
+    private RedisTemplate<String, Object> redisTemplate;
 
-    private static String REDIS_COMMENT_KEY = "weblog:comment:";
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    private static final String REDIS_COMMENT_KEY = "weblog:comment:";
+
+    private static final String REDIS_COMMENT_REPLIES_KEY = "weblog:comment:relies:";
 
     @Override
-    @Transactional(propagation=Propagation.REQUIRED)
+    @Transactional(propagation = Propagation.REQUIRED)
     public boolean addComment(CommentAddRq commentAddRq) {
-        commentMapper.insertComment(
+        //先更新数据库
+        Comment c = Comment.builder()
+                .articleId(commentAddRq.getArticleId())
+                .toAuthorId(commentAddRq.getToAuthorId())
+                .authorId(BaseContext.getUserId())
+                .replyId(commentAddRq.getReplyId())
+                .rootId(commentAddRq.getRootId())
+                .content(commentAddRq.getContent())
+                .isPrimary(commentAddRq.getIsPrimary())
+                .likes(0L)
+                .isDeleted(false)
+                .replies(0L)
+                .createTime(LocalDateTime.now())
+                .updateTime(LocalDateTime.now())
+                .build();
+        commentMapper.insertComment(c);
+        commentMapper.updateCommentReplies(
                 Comment.builder()
-                        .article_id(commentAddRq.getArticleId())
-                        .to_author_id(commentAddRq.getToAuthorId())
-                        .author_id(BaseContext.getUserId())
-                        .reply_id(commentAddRq.getReplyId())
-                        .root_id(commentAddRq.getRootId())
-                        .content(commentAddRq.getContent())
-                        .is_primary(commentAddRq.getIsPrimary())
-                        .likes(0L)
-                        .is_deleted(false)
-                        .replies(0L)
+                        .id(commentAddRq.getRootId())
                         .build()
         );
-        Comment rootComment = commentMapper.selectComment(commentAddRq.getRootId());
-        if(rootComment!=null){
-            commentMapper.updateComment(
-                    Comment.builder()
-                            .id(commentAddRq.getRootId())
-                            .replies(rootComment.getReplies()+1)
-                            .build()
+        //TODO 评论的ID需要统一获取而不是数据库自增，现在要访问数据库获取评论ID,非常不合理
+        if (c.getIsPrimary()) {
+            DefaultRedisScript<Long> script = new DefaultRedisScript<>();
+            script.setLocation(new ClassPathResource("lua/insertComment.lua"));
+            script.setResultType(Long.class);
+            String key = REDIS_COMMENT_KEY + commentAddRq.getArticleId();
+            long score = c.getCreateTime().toInstant(ZoneOffset.UTC).toEpochMilli();
+            Long ret = (Long) redisTemplate.execute(
+                    script,
+                    Arrays.asList(REDIS_COMMENT_KEY + commentAddRq.getArticleId(), REDIS_COMMENT_REPLIES_KEY + c.getId()),
+                    score,      // ARGV[1]
+                    JSON.toJSONString(c)        // ARGV[2]
             );
+        } else {
+            redisTemplate.opsForValue().increment(REDIS_COMMENT_REPLIES_KEY + c.getRootId());
         }
         return true;
     }
@@ -76,10 +102,28 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public List<Comment> queryComment(CommentQueryRq commentQueryRq) {
-        //查询一级评论先从缓存中取
-        if(commentQueryRq.getIsPrimary()&&Boolean.TRUE.equals(redisTemplate.hasKey(REDIS_COMMENT_KEY + commentQueryRq.getArticleId()))){
-            return new ArrayList<>(Objects.requireNonNull(redisTemplate.opsForZSet()
-                    .range(REDIS_COMMENT_KEY + commentQueryRq.getArticleId(), (long) (commentQueryRq.getPageNum() - 1) * commentQueryRq.getPageSize(), ((long) commentQueryRq.getPageNum() * commentQueryRq.getPageSize()))));
+        String key = REDIS_COMMENT_KEY + commentQueryRq.getArticleId();
+        if (commentQueryRq.getIsPrimary() && Boolean.TRUE.equals(redisTemplate.hasKey(key))) {
+            Set<Object> objSet = redisTemplate.opsForZSet()
+                    .reverseRange(key,
+                            (long) (commentQueryRq.getPageNum() - 1) * commentQueryRq.getPageSize(),
+                            (long) commentQueryRq.getPageNum() * commentQueryRq.getPageSize() - 1);
+
+            if (objSet == null) return Collections.emptyList();
+            List<Comment> res = objSet.stream()
+                    .map((o) -> {
+                        try {
+                            return objectMapper.readValue((String) o, Comment.class);
+                        } catch (Exception e) {
+                            log.error(e.getMessage());
+                            return null;
+                        }
+                    }).collect(Collectors.toList());
+            // 回填 replies
+            res.forEach(c -> {
+                c.setReplies(Long.valueOf((Integer) Objects.requireNonNull(redisTemplate.opsForValue().get(REDIS_COMMENT_REPLIES_KEY + c.getId()))));
+            });
+            return res;
         }
 
         //查询二级评论或者缓存未命中
@@ -87,14 +131,18 @@ public class CommentServiceImpl implements CommentService {
                 .articleId(commentQueryRq.getArticleId())
                 .rootId(commentQueryRq.getRootId())
                 .isPrimary(commentQueryRq.getIsPrimary())
-                .offset((commentQueryRq.getPageNum()-1)*commentQueryRq.getPageSize())
+                .offset((commentQueryRq.getPageNum() - 1) * commentQueryRq.getPageSize())
                 .pageSize(commentQueryRq.getPageSize())
                 .build();
         List<Comment> ans = commentMapper.queryComment(commentQueryDto);
-        ans.forEach((c)->
-                redisTemplate.opsForZSet().addIfAbsent(REDIS_COMMENT_KEY + commentQueryRq.getArticleId(),c,c.getCreateTime().toInstant(ZoneOffset.UTC).toEpochMilli())
-        );
-        redisTemplate.expire(REDIS_COMMENT_KEY + commentQueryRq.getArticleId(), Duration.ofMinutes(30));
+        if(commentQueryRq.getIsPrimary()) {
+            ans.forEach((c) -> {
+                        redisTemplate.opsForZSet().addIfAbsent(REDIS_COMMENT_KEY + commentQueryRq.getArticleId(), JSON.toJSONString(c), c.getCreateTime().toInstant(ZoneOffset.UTC).toEpochMilli());
+                        redisTemplate.opsForValue().setIfAbsent(REDIS_COMMENT_REPLIES_KEY + c.getId(), c.getReplies(), 30, TimeUnit.MINUTES);
+                    }
+            );
+            redisTemplate.expire(REDIS_COMMENT_KEY + commentQueryRq.getArticleId(), Duration.ofMinutes(30));
+        }
         return commentMapper.queryComment(commentQueryDto);
     }
 }
