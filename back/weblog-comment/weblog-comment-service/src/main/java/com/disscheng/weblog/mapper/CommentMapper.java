@@ -24,4 +24,6 @@ public interface CommentMapper {
 
     @Select(value = "SELECT * FROM t_comment WHERE id=#{id}")
     public Comment selectComment(Long id);
+
+    public Long countComment(Long articleId);
 }

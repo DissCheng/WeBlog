@@ -125,7 +125,6 @@ public class CommentServiceImpl implements CommentService {
             });
             return res;
         }
-
         //查询二级评论或者缓存未命中
         CommentQueryDto commentQueryDto = CommentQueryDto.builder()
                 .articleId(commentQueryRq.getArticleId())
@@ -144,5 +143,9 @@ public class CommentServiceImpl implements CommentService {
             redisTemplate.expire(REDIS_COMMENT_KEY + commentQueryRq.getArticleId(), Duration.ofMinutes(30));
         }
         return commentMapper.queryComment(commentQueryDto);
+    }
+
+    public Long queryComment(Long articleId){
+        return commentMapper.countComment(articleId);
     }
 }

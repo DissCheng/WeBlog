@@ -188,6 +188,16 @@ bg-sky-600 rounded-lg focus:ring-4 focus:ring-sky-200 dark:focus:ring-sky-900 ho
           </div>
         </div>
       </div>
+      <!-- 加载更多 -->
+      <div v-if="loading" class="loading">加载中...</div>
+      <div
+          v-else-if="hasMore"
+          class="load-more"
+          @click="loadMore"
+      >
+        点击加载更多
+      </div>
+      <div v-else class="no-more">没有更多评论了</div>
     </div>
   </div>
 </template>
@@ -250,8 +260,8 @@ function refreshComment() {
     pageNum: 1
   }).then((res) => {
     rawComments.value = res.data.comment
-    total = comments.value.length
   })
+
 }
 
 //获取一级评论的二级评论
@@ -380,5 +390,8 @@ const showChildReply = (index) => {
 
 </script>
 <style scoped>
-
+.comment-box{ padding:12px; background:#fafafa; }
+.comment-item{ margin-bottom:8px; line-height:1.6; }
+.load-more,.no-more,.loading{ text-align:center; padding:10px; color:#666; cursor:pointer; }
+.load-more:hover{ color:#409eff; }
 </style>

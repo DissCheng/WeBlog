@@ -19,7 +19,7 @@ public class CommentController {
     @Autowired
     private CommentService commentService;
 
-    private RateLimiter rateLimiter = RateLimiter.create(10000);
+    private RateLimiter rateLimiter = RateLimiter.create(20000);
 
     @PostMapping("/addComment")
     public Response<Boolean> addComment(@RequestBody CommentAddRq commentAddRq){
@@ -70,4 +70,12 @@ public class CommentController {
                 .build();
     }
 
+    @GetMapping("/countComment")
+    public Response<Long> queryComment(Long articleId){
+        return Response.<Long>builder()
+                .code(200)
+                .msg("success")
+                .data(commentService.countComment(articleId))
+                .build();
+    }
 }

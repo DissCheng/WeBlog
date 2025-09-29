@@ -58,4 +58,13 @@
         WHERE id = #{id}
         AND is_deleted = 0
     </update>
+
+    <!-- 查询文章一级评论数 -->
+    <select id="countComment">
+        select count(1)
+        <where>
+            article_id = #{articleId}
+            AND is_primary = 1
+        </where>
+    </select>
 </mapper>

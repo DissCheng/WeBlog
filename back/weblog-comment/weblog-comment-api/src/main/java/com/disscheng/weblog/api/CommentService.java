@@ -14,4 +14,6 @@ public interface CommentService {
     public List<Comment> queryComment(CommentQueryRq commentQueryRq);
 
     public boolean likeComment(Long id);
+
+    public Long countComment(Long articleId);
 }
