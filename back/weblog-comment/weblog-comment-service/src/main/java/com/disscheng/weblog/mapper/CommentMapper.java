@@ -26,4 +26,6 @@ public interface CommentMapper {
     public Comment selectComment(Long id);
 
     public Long countComment(Long articleId);
+
+    public List<Comment> cursorQuery(CommentQueryDto commentQueryDto);
 }

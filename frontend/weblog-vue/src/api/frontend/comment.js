@@ -20,3 +20,10 @@ export function deleteComment(id){
 export function likeComment(id){
     return axios.post("/weblog/article/comment/likeComment",id)
 }
+
+// 获取评论数
+export function countComment(articleId) {   // 接收一个数字
+    return axios.get("/weblog/article/comment/countComment", {
+        params: { articleId }   // ←  key = articleId, value = 参数
+    });
+}

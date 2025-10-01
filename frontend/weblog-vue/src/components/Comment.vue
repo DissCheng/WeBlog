@@ -206,16 +206,24 @@ bg-sky-600 rounded-lg focus:ring-4 focus:ring-sky-200 dark:focus:ring-sky-900 ho
 <script setup>
 import {ref, computed, watch, reactive, onMounted, nextTick} from 'vue'
 import {initPopovers, initTooltips} from "flowbite";
-import {getComment,addComment} from "@/api/frontend/comment.js";
+import {getComment,addComment,countComment} from "@/api/frontend/comment.js";
 import {useRoute, useRouter} from "vue-router";
 import {showMessage} from "@/composables/util.js";
+import { useUserStore } from '@/stores/user'
 
 let total = ref(0)
+let nowTotal = ref(0)
 //当前路由
 const route = useRoute()
 //评论内容
 const commentContext = ref('')
 const articleCommentContext = ref('')
+// 评论游标
+const pageNum = ref(1)
+const pageSize = ref(10)
+const cursor = ref("")
+const hasMore = ref(true)
+const loading = ref(false)
 // 评论数组
 const rawComments = ref([])
 const rawSonComments = ref([])
@@ -223,8 +231,8 @@ const rawSonComments = ref([])
 const childComments = computed(() =>
     rawSonComments.value.map(item => (reactive({
       ...item,               // 后端字段
-      nickname: "用户"+item.authorId,
-      replyNickname: "用户"+item.toAuthorId,
+      nickname: item.authorName,
+      replyNickname: item.toAuthorName,
       childComments: [],
       childCommentsCnt: 0,
       expanded: false,
@@ -234,7 +242,7 @@ const childComments = computed(() =>
 const comments = computed(() =>
     rawComments.value.map(item => (reactive({
       ...item,               // 后端字段
-      nickname: "用户"+item.authorId,
+      nickname: item.authorName,
       replyNickname: null,
       childComments: childComments,
       childCommentsCnt: 0,
@@ -244,24 +252,50 @@ const comments = computed(() =>
 )
 
 onMounted(()=> {
+      init()
+      getCommentCnt()
       refreshComment()
     }
 )
 
 watch(()=>route.params.articleId, (value, oldValue, onCleanup)=>refreshComment())
 
+function init(){
+  rawComments.value=[]
+  pageNum.value = 1
+  pageSize.value = 20
+  cursor.value = '2100-10-01 00:00:00'
+}
+
 //获取文章一级评论
 function refreshComment() {
-  rawComments.value=[]
   getComment({
     articleId: route.params.articleId,
     isPrimary: true,
-    pageSize: 10,
-    pageNum: 1
+    pageSize: pageSize.value,
+    pageNum: pageNum.value,
+    cursor: cursor.value
   }).then((res) => {
-    rawComments.value = res.data.comment
+    if(res.data.comment.length>0) {
+      cursor.value = res.data.comment[res.data.comment.length-1].createTime
+    }
+    rawComments.value=rawComments.value.concat(res.data.comment)
+    nowTotal.value = rawComments.value.length
+    hasMore.value = (total.value>nowTotal.value)
   })
+}
 
+//游标查询一级评论
+function loadMore(){
+  refreshComment()
+}
+
+//获取文章总评论数
+function getCommentCnt() {
+  countComment (route.params.articleId)
+    .then((res) => {
+      total.value = res.data.count
+  })
 }
 
 //获取一级评论的二级评论
@@ -279,6 +313,9 @@ function refreshSonComment(index) {
   })
 }
 
+// 是否登录，通过 userStore 中的 userInfo 对象是否有数据来判断
+const userStore = useUserStore()
+
 //提交评论
 function submitCommentForm(index1, index2) {
   let replyId = null
@@ -286,13 +323,15 @@ function submitCommentForm(index1, index2) {
   let isPrimary = false
   let context = ''
   let toAuthorId = null
-
+  let toAuthorName = null
   if (index1 === -1) {
     isPrimary = true;
     context = articleCommentContext.value
     addComment({
       "articleId": route.params.articleId,
       "replyId": replyId,
+      "authorName": userStore.userInfo.userName,
+      "toAuthorName": "",
       "rootId": rootId,
       "isPrimary": isPrimary,
       "content": context
@@ -304,6 +343,7 @@ function submitCommentForm(index1, index2) {
       }
       commentContext.value=''
       articleCommentContext.value=''
+      init()
       refreshComment()
     })
   } else {
@@ -311,17 +351,21 @@ function submitCommentForm(index1, index2) {
     if (index2 === -1) {
       replyId = comments.value[index1].id
       toAuthorId = comments.value[index1].authorId
+      toAuthorName = comments.value[index1].authorName
+
     }else{
       replyId = comments.value[index1].childComments[index2].id
       toAuthorId = comments.value[index1].childComments[index2].authorId
+      toAuthorName = comments.value[index1].childComments[index2].authorName
     }
-
     rootId = comments.value[index1].id;
     context = commentContext.value
     isPrimary = false
     addComment({
       "articleId": route.params.articleId,
       "toAuthorId": toAuthorId,
+      "authorName": userStore.userInfo.userName,
+      "toAuthorName": toAuthorName,
       "replyId": replyId,
       "rootId": rootId,
       "isPrimary": isPrimary,

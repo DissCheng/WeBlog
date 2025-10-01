@@ -4,6 +4,7 @@ import com.disscheng.weblog.api.CommentService;
 import com.disscheng.weblog.pojo.Response;
 import com.disscheng.weblog.pojo.rq.CommentAddRq;
 import com.disscheng.weblog.pojo.rq.CommentQueryRq;
+import com.disscheng.weblog.pojo.vo.CommentCountVo;
 import com.disscheng.weblog.pojo.vo.CommentQueryVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -71,11 +72,11 @@ public class CommentController {
     }
 
     @GetMapping("/countComment")
-    public Response<Long> queryComment(Long articleId){
-        return Response.<Long>builder()
+    public Response<CommentCountVo> queryComment(Long articleId){
+        return Response.<CommentCountVo>builder()
                 .code(200)
                 .msg("success")
-                .data(commentService.countComment(articleId))
+                .data(CommentCountVo.builder().count(commentService.countComment(articleId)).build())
                 .build();
     }
 }

@@ -35,8 +35,12 @@ public class Comment {
     private Long id;
     //回复人
     private Long authorId;
+    //回复人名称
+    private String authorName;
     //回复对象
     private Long toAuthorId;
+    //回复对象名称
+    private String toAuthorName;
     //回复评论
     private Long replyId;
     //一级评论

@@ -13,7 +13,11 @@ import lombok.NoArgsConstructor;
 public class CommentAddRq {
     private Long authorId;
 
+    private String authorName;
+
     private Long toAuthorId;
+
+    private String toAuthorName;
 
     private Long replyId;
 

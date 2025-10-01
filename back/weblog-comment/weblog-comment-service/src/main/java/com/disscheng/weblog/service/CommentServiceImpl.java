@@ -52,7 +52,9 @@ public class CommentServiceImpl implements CommentService {
         Comment c = Comment.builder()
                 .articleId(commentAddRq.getArticleId())
                 .toAuthorId(commentAddRq.getToAuthorId())
+                .toAuthorName(commentAddRq.getToAuthorName())
                 .authorId(BaseContext.getUserId())
+                .authorName(commentAddRq.getAuthorName())
                 .replyId(commentAddRq.getReplyId())
                 .rootId(commentAddRq.getRootId())
                 .content(commentAddRq.getContent())
@@ -105,47 +107,49 @@ public class CommentServiceImpl implements CommentService {
         String key = REDIS_COMMENT_KEY + commentQueryRq.getArticleId();
         if (commentQueryRq.getIsPrimary() && Boolean.TRUE.equals(redisTemplate.hasKey(key))) {
             Set<Object> objSet = redisTemplate.opsForZSet()
-                    .reverseRange(key,
-                            (long) (commentQueryRq.getPageNum() - 1) * commentQueryRq.getPageSize(),
-                            (long) commentQueryRq.getPageNum() * commentQueryRq.getPageSize() - 1);
-
-            if (objSet == null) return Collections.emptyList();
-            List<Comment> res = objSet.stream()
-                    .map((o) -> {
-                        try {
-                            return objectMapper.readValue((String) o, Comment.class);
-                        } catch (Exception e) {
-                            log.error(e.getMessage());
-                            return null;
-                        }
-                    }).collect(Collectors.toList());
-            // 回填 replies
-            res.forEach(c -> {
-                c.setReplies(Long.valueOf((Integer) Objects.requireNonNull(redisTemplate.opsForValue().get(REDIS_COMMENT_REPLIES_KEY + c.getId()))));
-            });
-            return res;
+                    .reverseRangeByScore(key,0,commentQueryRq.getCursor().toInstant(ZoneOffset.UTC).toEpochMilli()-1,0, commentQueryRq.getPageSize());
+            if (objSet != null && !objSet.isEmpty()) {
+                List<Comment> res = objSet.stream()
+                        .map((o) -> {
+                            try {
+                                return objectMapper.readValue((String) o, Comment.class);
+                            } catch (Exception e) {
+                                log.error(e.getMessage());
+                                return null;
+                            }
+                        }).collect(Collectors.toList());
+                // 回填 replies
+                res.forEach(c -> {
+                    c.setReplies(Long.valueOf((Integer) Objects.requireNonNull(redisTemplate.opsForValue().get(REDIS_COMMENT_REPLIES_KEY + c.getId()))));
+                });
+                return res;
+            }
         }
         //查询二级评论或者缓存未命中
         CommentQueryDto commentQueryDto = CommentQueryDto.builder()
                 .articleId(commentQueryRq.getArticleId())
+                .cursor(commentQueryRq.getCursor())
                 .rootId(commentQueryRq.getRootId())
                 .isPrimary(commentQueryRq.getIsPrimary())
                 .offset((commentQueryRq.getPageNum() - 1) * commentQueryRq.getPageSize())
                 .pageSize(commentQueryRq.getPageSize())
                 .build();
-        List<Comment> ans = commentMapper.queryComment(commentQueryDto);
+        //List<Comment> ans = commentMapper.queryComment(commentQueryDto);
         if(commentQueryRq.getIsPrimary()) {
+            List<Comment> ans = commentMapper.cursorQuery(commentQueryDto);
             ans.forEach((c) -> {
                         redisTemplate.opsForZSet().addIfAbsent(REDIS_COMMENT_KEY + commentQueryRq.getArticleId(), JSON.toJSONString(c), c.getCreateTime().toInstant(ZoneOffset.UTC).toEpochMilli());
                         redisTemplate.opsForValue().setIfAbsent(REDIS_COMMENT_REPLIES_KEY + c.getId(), c.getReplies(), 30, TimeUnit.MINUTES);
                     }
             );
             redisTemplate.expire(REDIS_COMMENT_KEY + commentQueryRq.getArticleId(), Duration.ofMinutes(30));
+            return ans;
+        }else{
+            return commentMapper.queryComment(commentQueryDto);
         }
-        return commentMapper.queryComment(commentQueryDto);
     }
 
-    public Long queryComment(Long articleId){
+    public Long countComment(Long articleId){
         return commentMapper.countComment(articleId);
     }
 }

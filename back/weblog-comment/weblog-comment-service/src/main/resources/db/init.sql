@@ -1,11 +1,13 @@
 CREATE TABLE IF NOT EXISTS `t_comment` (
-    `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '评论id',
+                                           `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '评论id',
     `author_id` bigint(20) unsigned NOT NULL COMMENT '作者id',
-    `to_author_id` bigint(20) unsigned COMMENT '回复对象id',
-    `reply_id` bigint(20) unsigned COMMENT '回复评论id',
-    `root_id` bigint(20) unsigned COMMENT '一级评论id',
+    `author_name` varchar(20) NOT NULL COMMENT '作者名称',
+    `to_author_id` bigint(20) unsigned DEFAULT NULL COMMENT '回复对象id',
+    `to_author_name` varchar(20)  DEFAULT NULL COMMENT '回复对象名称',
+    `reply_id` bigint(20) unsigned DEFAULT NULL COMMENT '回复评论id',
+    `root_id` bigint(20) unsigned DEFAULT NULL COMMENT '一级评论id',
     `article_id` bigint(20) unsigned NOT NULL COMMENT '文章id',
-    `content` varchar(120) NOT NULL DEFAULT '' COMMENT '评论内容',
+    `content` varchar(500) NOT NULL DEFAULT '' COMMENT '评论内容',
     `likes` bigint(20) unsigned NOT NULL DEFAULT 0 COMMENT '点赞数',
     `replies` bigint(20) unsigned NOT NULL DEFAULT 0 COMMENT '评论数量',
     `is_primary` tinyint(2) NOT NULL DEFAULT 0 COMMENT '一级评论：0：否 1：是',
@@ -14,7 +16,10 @@ CREATE TABLE IF NOT EXISTS `t_comment` (
     `is_deleted` tinyint(2) NOT NULL DEFAULT 0 COMMENT '删除标志位：0：未删除 1：已删除',
     PRIMARY KEY (`id`),
     KEY `idx_article_id` (`article_id`),
-    KEY `idx_author_id` (`author_id`)
+    KEY `idx_author_id` (`author_id`),
+    KEY `idx_root_id` (`root_id`),
+    KEY `idx_create_time` (`create_time`),
+    KEY `idx_article_primary_time` (`article_id`, `is_primary`, `create_time`)
     ) ENGINE = InnoDB
     DEFAULT CHARSET = utf8mb4
     COLLATE = utf8mb4_general_ci;
