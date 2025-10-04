@@ -10,6 +10,7 @@ import com.disscheng.weblog.mapper.ArticleMapper;
 import com.disscheng.weblog.mapper.CategoryMapper;
 import com.disscheng.weblog.mapper.TagMapper;
 import com.disscheng.weblog.service.ArticleService;
+import com.disscheng.weblog.service.RocketMQService;
 import com.disscheng.weblog.thread.ReadArticle.ReadArticleEvent;
 import com.disscheng.weblog.utils.Markdown.MarkdownUtil;
 import com.disscheng.weblog.vo.*;
@@ -40,6 +41,8 @@ public class ArticleServiceImpl implements ArticleService {
     private TagMapper tagMapper;
     @Autowired
     private ApplicationEventPublisher publisher;
+    @Autowired
+    private RocketMQService rocketMQService;
     /**
      * 文章分页查询
      *
@@ -304,11 +307,12 @@ public class ArticleServiceImpl implements ArticleService {
                     .build();
         }catch (NullPointerException e){throw new ArticleDeleteException("文章不存在"); }
     }
+
     /**
      * 更新文章阅读数
      * @param id
      */
      public void updateReadNum(long id) {
-        publisher.publishEvent(new ReadArticleEvent(this,id));
+        rocketMQService.updatePV(id);
      }
 }

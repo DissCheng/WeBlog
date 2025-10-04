@@ -58,6 +58,10 @@
         <!-- spring alibaba -->
         <spring-alibaba.version>2021.1</spring-alibaba.version>
         <spring-cloud.version>2021.0.8</spring-cloud.version>
+        <!-- rocketmq -->
+        <rocketmq.version>2.2.3</rocketmq.version>
+        <!-- BufferTrigger -->
+        <buffertrigger.version>0.2.9</buffertrigger.version>
     </properties>
 
     <!-- 统一依赖管理 -->
@@ -194,10 +198,19 @@
                 <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
                 <version>${spring-alibaba.version}</version>
             </dependency>
-
+            <!-- RocketMQ -->
+            <dependency>
+                <groupId>org.apache.rocketmq</groupId>
+                <artifactId>rocketmq-spring-boot-starter</artifactId>
+                <version>${rocketmq.version}</version>
+            </dependency>
+            <!-- BufferTrigger -->
+            <dependency>
+                <groupId>com.github.phantomthief</groupId>
+                <artifactId>buffer-trigger</artifactId>
+                <version>${buffertrigger.version}</version>
+            </dependency>
         </dependencies>
-
-
     </dependencyManagement>
 
     <!-- 插件管理 -->

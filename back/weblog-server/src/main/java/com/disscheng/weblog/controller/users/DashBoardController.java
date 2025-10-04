@@ -48,8 +48,9 @@ public class DashBoardController {
         // 遍历从一年前的今天到今天的每一天
         LocalDate  oneYearAgo = LocalDate.now().minusYears(1);
         LocalDate  today = LocalDate.now();
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
         for (ArticleStatisticDTO articleStatisticDTO : articleStatisticDTOList) {
-            map.put(SimpleDateFormat.getDateInstance().format(articleStatisticDTO.getCreateDate()), articleStatisticDTO.getCount());
+            map.put(simpleDateFormat.format(articleStatisticDTO.getCreateDate()), articleStatisticDTO.getCount());
         }
         for (LocalDate date = oneYearAgo; !date.isAfter(today); date = date.plusDays(1)) {
             String dateStr = date.toString();

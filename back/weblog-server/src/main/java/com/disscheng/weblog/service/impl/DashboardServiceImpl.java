@@ -50,14 +50,18 @@ public class DashboardServiceImpl implements DashboardService {
      * @return
      */
     public List<ArticleStatisticDTO> getArticleByYear(Year year) {
-        LocalDateTime startDate = year.atDay(now().getDayOfYear()).atStartOfDay();
-        LocalDateTime endDate = year.atDay(1).plusYears(1).atStartOfDay();
-
+        LocalDateTime startDate = LocalDate.now().minusYears(1).atStartOfDay(); // 去年今天 00:00
+        LocalDateTime endDate   = LocalDateTime.now();                          // 此刻     // 现在（2025-06-25 14:30...）
         List<ArticleStatisticDTO> statisticDTOList=articleMapper.getArticleByDate(startDate, endDate);
         ArticlePublishStatisticsVO articlePublishStatisticsVO = ArticlePublishStatisticsVO.builder()
                 .articlePublishStatistics(new java.util.HashMap<>())
                .build();
-
+        statisticDTOList.forEach((articleStatisticDTO)->{
+            articlePublishStatisticsVO.getArticlePublishStatistics().putIfAbsent(
+                    articleStatisticDTO.getCreateDate().toString(),
+                    articleStatisticDTO.getCount()
+            );
+        });
         return statisticDTOList;
     }
 

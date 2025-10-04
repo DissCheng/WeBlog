@@ -149,6 +149,14 @@ public interface ArticleMapper {
      public void updateReadNum(long id);
 
     /**
+     * 阅读量更新
+     * @param id
+     */
+    @Update("update t_article set read_num = read_num + #{add} where id = #{id}")
+    public void batchUpdateReadNum(long id,long add);
+
+
+    /**
      * 获取文章总访问量
      * @return
      */

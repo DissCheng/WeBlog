@@ -34,4 +34,10 @@ minio:
   secretKey: admin123
   bucketName: weblog
 
-
+rocketmq:
+  name-server: 192.168.26.206:9876          # NameServer 地址
+  producer:
+    group: weblog-pv-update-group         # 生产者组
+    send-message-timeout: 300000
+  consumer:
+    group: weblog-pv-update-group         # 消费者组
